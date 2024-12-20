@@ -1,0 +1,8 @@
+<ul>
+    {% for child in parent_task.children.all %}
+        <li class="{% if child.completed %}completed{% endif %}">
+            {{ child.get_numbering }} - {{ child.title }}
+            {% include 'task_children.html' with parent_task=child %}
+        </li>
+    {% endfor %}
+</ul>
