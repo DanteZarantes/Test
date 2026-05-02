@@ -1,1813 +1,1105 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%234a9c6e' d='M50 10 C30 10 20 30 20 50 C20 70 30 90 50 90 C70 90 80 70 85 55 C90 40 80 25 70 15 C65 8 58 5 50 10 Z'/><path fill='%23a8e6a1' d='M50 20 C40 20 30 35 28 50 C26 65 35 80 50 80 C65 80 74 65 72 50 C70 35 60 20 50 20 Z'/><path fill='%235ecc7a' d='M50 30 L45 40 L50 55 L55 40 Z'/></svg>">
-    <title>Tavola-Verde Menu | Our Dishes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, #1a4a2e 0%, #0d2818 100%);
-            min-height: 100vh;
-            color: #f0f0f0;
-            line-height: 1.6;
-        }
-
-        /* ========== NAVBAR ========== */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: rgba(13, 40, 24, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            border-bottom: 2px solid rgba(77, 156, 110, 0.3);
-            transition: all 0.3s ease;
-        }
-
-         .category-nav {
-             position: fixed;
-             top: 85px;
-             left: 0;
-             right: 0;
-             padding: 10px 0;
-             z-index: 997;
-             background: rgba(10, 28, 18, 0.97);
-             border-bottom: 2px solid rgba(94, 204, 122, 0.5);
-             box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-         }
-
-        .category-nav::before,
-        .category-nav::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 40px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .category-nav::before {
-            left: 0;
-            background: linear-gradient(90deg, rgba(10, 32, 18, 0.9) 0%, transparent 100%);
-        }
-
-        .category-nav::after {
-            right: 0;
-            background: linear-gradient(-90deg, rgba(10, 32, 18, 0.9) 0%, transparent 100%);
-        }
-
-        .category-nav-list {
-            display: flex;
-            gap: 6px;
-            justify-content: flex-start;
-            flex-wrap: nowrap;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 15px;
-            width: max-content;
-        }
-
-             .category-nav-item {
-                 display: inline-flex;
-                 align-items: center;
-                 padding: 10px 16px;
-                 background: rgba(77, 156, 110, 0.2);
-                 border: 1.5px solid rgba(77, 156, 110, 0.4);
-                 border-radius: 20px;
-                 color: #c5f0c5;
-                 font-size: 0.85em;
-                 font-weight: 500;
-                 cursor: pointer;
-                 transition: all 0.3s ease;
-                 text-transform: capitalize;
-                 letter-spacing: 0.3px;
-                 white-space: nowrap;
-                 user-select: none;
-                 -webkit-tap-highlight-color: transparent;
-                 scroll-snap-align: start;
-                 flex-shrink: 0;
-             }
-
-        .category-nav-item:hover {
-            background: rgba(77, 156, 110, 0.4);
-            border-color: #7dd87d;
-            color: #ffffff;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(77, 156, 110, 0.5);
-        }
-
-        .category-nav-item:active {
-            transform: scale(0.95);
-        }
-
-        .category-nav-item.active {
-            background: linear-gradient(135deg, #5ecc7a 0%, #4a9c6e 100%);
-            border-color: #8fff8f;
-            color: white;
-            box-shadow: 0 4px 20px rgba(94, 204, 122, 0.6);
-            transform: translateY(-3px);
-            font-weight: 700;
-        }
-
-        .category-nav-item.all.active {
-            background: linear-gradient(135deg, #7dd87d 0%, #5ecc7a 100%);
-        }
-
-        /* Adjust main content to account for sticky category nav */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 140px 20px 20px;
-        }
-
-        .navbar.scrolled {
-            background: rgba(13, 40, 24, 0.98);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .navbar-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .navbar-logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 2em;
-            font-weight: 700;
-            color: #7dd87d;
-            text-decoration: none;
-            letter-spacing: 3px;
-            text-shadow: 0 0 15px rgba(125, 216, 125, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .navbar-logo::before {
-            content: '🍃';
-            font-size: 1.2em;
-        }
-
-        .navbar-menu {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-        }
-
-        .navbar-menu a {
-            color: #c5f0c5;
-            text-decoration: none;
-            font-size: 1em;
-            font-weight: 500;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            padding: 8px 0;
-            position: relative;
-        }
-
-        .navbar-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #7dd87d;
-            transition: width 0.3s ease;
-        }
-
-        .navbar-menu a:hover {
-            color: #7dd87d;
-        }
-
-        .navbar-menu a:hover::after {
-            width: 100%;
-        }
-
-        .navbar-cta {
-            background: linear-gradient(135deg, #4a9c6e 0%, #3d8c5e 100%);
-            color: white !important;
-            padding: 10px 25px !important;
-            border-radius: 30px;
-            transition: all 0.3s ease !important;
-        }
-
-        .navbar-cta:hover {
-            background: linear-gradient(135deg, #5ecc7a 0%, #4a9c6e 100%) !important;
-            transform: translateY(-2px);
-        }
-
-        .navbar-cta::after {
-            display: none !important;
-        }
-
-        .navbar-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .navbar-toggle span {
-            width: 28px;
-            height: 3px;
-            background: #7dd87d;
-            border-radius: 3px;
-            transition: all 0.3s ease;
-        }
-
-        /* Language Selector */
-        .language-selector {
-            position: relative;
-            margin-left: auto;
-        }
-
-        .language-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(77, 156, 110, 0.15);
-            border: 1.5px solid rgba(77, 156, 110, 0.3);
-            border-radius: 25px;
-            color: #c5f0c5;
-            font-size: 0.9em;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-
-        .language-dropdown:hover {
-            background: rgba(77, 156, 110, 0.25);
-            border-color: #4a9c6e;
-            color: #7dd87d;
-        }
-
-        .language-flag {
-            font-size: 1.2em;
-        }
-
-        .language-arrow {
-            font-size: 0.7em;
-            transition: transform 0.3s ease;
-        }
-
-        .language-dropdown.active .language-arrow {
-            transform: rotate(180deg);
-        }
-
-        .language-menu {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            background: rgba(13, 40, 24, 0.98);
-            border: 1.5px solid rgba(77, 156, 110, 0.3);
-            border-radius: 12px;
-            min-width: 160px;
-            padding: 8px 0;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 1001;
-            backdrop-filter: blur(10px);
-        }
-
-        .language-menu.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .language-option {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 20px;
-            color: #c5f0c5;
-            font-size: 0.95em;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .language-option:hover {
-            background: rgba(77, 156, 110, 0.15);
-            color: #7dd87d;
-        }
-
-        .language-option.active {
-            background: rgba(77, 156, 110, 0.2);
-            color: #7dd87d;
-        }
-
-        .language-option-flag {
-            font-size: 1.3em;
-        }
-
-        .language-option-code {
-            font-weight: 600;
-            color: #7dd87d;
-            min-width: 35px;
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            border-bottom: 3px solid #4a9c6e;
-            margin-bottom: 40px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-
-        h1 {
-            font-size: 3.5em;
-            color: #7dd87d;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            margin-bottom: 10px;
-            letter-spacing: 3px;
-        }
-
-        .subtitle {
-            font-size: 1.3em;
-            color: #a8e6a1;
-            font-style: italic;
-        }
-
-        .category {
-            margin-bottom: 50px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            border: 2px solid #3d8c5e;
-            transition: transform 0.3s ease;
-        }
-
-        .category:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(77, 156, 110, 0.3);
-        }
-
-        .category-title {
-            font-size: 2.2em;
-            color: #5ecc7a;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #4a9c6e;
-            text-transform: capitalize;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .category-title::before {
-            content: '🌿';
-            font-size: 0.8em;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .menu-item {
-            background: linear-gradient(145deg, #2a5c3a 0%, #1e4530 100%);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.4s ease;
-            border: 1px solid #4a9c6e;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .menu-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(77, 156, 110, 0.45);
-        }
-
-        .menu-item-image {
-            width: 100%;
-            height: 520px;
-            object-fit: cover;
-            display: block;
-            border-bottom: 3px solid #3d8c5e;
-            transition: transform 0.5s ease;
-        }
-
-        .menu-item:hover .menu-item-image {
-            transform: scale(1.08);
-        }
-
-        .menu-item-name {
-            padding: 18px 18px 8px;
-            font-size: 1.15em;
-            color: #c5f0c5;
-            text-align: center;
-            font-weight: 600;
-            letter-spacing: 1px;
-            background: linear-gradient(180deg, rgba(26, 69, 48, 0.6) 0%, rgba(20, 55, 38, 0.8) 100%);
-        }
-
-        .menu-item-price {
-            padding: 0 18px 18px;
-            font-size: 1.05em;
-            color: #7dd87d;
-            text-align: center;
-            font-weight: 700;
-            background: linear-gradient(180deg, rgba(20, 55, 38, 0.8) 0%, rgba(26, 69, 48, 0.6) 100%);
-        }
-
-        .menu-item-details {
-            padding: 10px 18px;
-            font-size: 0.85em;
-            color: #a8e6a1;
-            text-align: center;
-            font-style: italic;
-            background: linear-gradient(180deg, rgba(13, 40, 24, 0.9) 0%, rgba(20, 55, 38, 0.7) 100%);
-            border-top: 1px solid rgba(77, 156, 110, 0.2);
-        }
-
-        /* Modal for description */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background: linear-gradient(145deg, #1a4a2e 0%, #0d2818 100%);
-            border: 2px solid #4a9c6e;
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(77, 156, 110, 0.3);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(77, 156, 110, 0.2);
-            border: 1.5px solid rgba(77, 156, 110, 0.4);
-            color: #7dd87d;
-            font-size: 1.5em;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(77, 156, 110, 0.4);
-            transform: scale(1.1);
-        }
-
-        .modal-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8em;
-            color: #7dd87d;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #4a9c6e;
-        }
-
-        .modal-price {
-            font-size: 1.4em;
-            color: #5ecc7a;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .modal-description {
-            font-size: 1em;
-            color: #c5f0c5;
-            line-height: 1.7;
-        }
-
-        .modal-description strong {
-            color: #7dd87d;
-        }
-
-        .category-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .category-icon {
-            font-size: 0.6em;
-        }
-
-        .drink-subcategory {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px dashed #4a9c6e;
-        }
-
-        .drink-subcategory:first-child {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: none;
-        }
-
-        .drink-subcategory-title {
-            font-size: 1.6em;
-            color: #6fd483;
-            margin-bottom: 20px;
-            padding-left: 10px;
-            border-left: 4px solid #5ecc7a;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .drink-subcategory-title::before {
-            content: '🥤';
-            font-size: 0.7em;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            margin-top: 50px;
-            border-top: 2px solid #4a9c6e;
-            color: #8fc98f;
-            font-size: 0.9em;
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 1024px) {
-            .menu-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 20px;
-            }
-        }
-
-         @media (max-width: 768px) {
-             .navbar-menu {
-                 position: fixed;
-                 top: 160px;
-                 left: 0;
-                 right: 0;
-                 background: rgba(13, 40, 24, 0.98);
-                 flex-direction: column;
-                 padding: 30px;
-                 gap: 20px;
-                 transform: translateY(-150%);
-                 opacity: 0;
-                 transition: all 0.3s ease;
-                 border-bottom: 2px solid rgba(77, 156, 110, 0.3);
-                 z-index: 998;
-             }
-
-             .navbar-menu.active {
-                 transform: translateY(0);
-                 opacity: 1;
-             }
-
-             .navbar-toggle {
-                 display: flex;
-                 z-index: 1002;
-             }
-
-              .category-nav {
-                  top: 100px;
-                  overflow-x: auto;
-                  -webkit-overflow-scrolling: touch;
-                  scrollbar-width: none;
-                  -ms-overflow-style: none;
-                  scroll-snap-type: x mandatory;
-                  -webkit-scroll-snap-type: x mandatory;
-                  touch-action: pan-x;
-              }
-
-             .category-nav::-webkit-scrollbar {
-                 display: none;
-             }
-
-             .category-title {
-                 font-size: 1.6em;
-             }
-
-             .menu-grid {
-                 grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                 gap: 15px;
-             }
-
-             .drink-subcategory-title {
-                 font-size: 1.3em;
-             }
-
-             .container {
-                 padding-top: 170px;
-             }
-
-             .category-nav-list {
-                 display: flex;
-                 gap: 6px;
-                 justify-content: flex-start;
-                 flex-wrap: nowrap;
-                 width: max-content;
-                 max-width: none;
-                 margin: 0;
-                 padding: 0 15px;
-             }
-
-              .category-nav-item {
-                  display: inline-flex;
-                  align-items: center;
-                  padding: 12px 20px;
-                  background: rgba(60, 120, 80, 0.35);
-                  border: 2px solid #5ecc7a;
-                  border-radius: 20px;
-                  color: #e0ffe0;
-                  font-size: 0.9em;
-                  font-weight: 600;
-                  cursor: pointer;
-                  transition: all 0.3s ease;
-                  text-transform: capitalize;
-                  letter-spacing: 0.5px;
-                  white-space: nowrap;
-                  user-select: none;
-                  -webkit-tap-highlight-color: transparent;
-                  scroll-snap-align: start;
-                  flex-shrink: 0;
-                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-              }
-          } /* close 768px media query */
-
-        @media (max-width: 480px) {
-            .category-title {
-                font-size: 1.3em;
-            }
-
-            .menu-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .menu-item-image {
-                height: 420px;
-            }
-
-            .drink-subcategory-title {
-                font-size: 1.1em;
-            }
-
-            .navbar-logo {
-                font-size: 1.6em;
-            }
-
-            .language-dropdown {
-                padding: 6px 12px;
-                font-size: 0.8em;
-            }
-
-            .language-flag {
-                font-size: 1em;
-            }
-        }
-
-    </style>
-    </head>
-    <body>
-        <!-- ========== NAVBAR ========== -->
-        <nav class="navbar" id="navbar">
-            <div class="navbar-container">
-                <a href="index.html" class="navbar-logo">Tavola-Verde</a>
-
-                <div class="navbar-toggle" id="navbarToggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="icon" href="image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%234a9c6e' d='M50 10 C30 10 20 30 20 50 C20 70 30 90 50 90 C70 90 80 70 85 55 C90 40 80 25 70 15 C65 8 58 5 50 10 Z'/><path fill='%23a8e6a1' d='M50 20 C40 20 30 35 28 50 C26 65 35 80 50 80 C65 80 74 65 72 50 C70 35 60 20 50 20 Z'/><path fill='%235ecc7a' d='M50 30 L45 40 L50 55 L55 40 Z'/></svg>">
+            <title>Tavola-Verde Menu | Our Dishes</title>
+            <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body {
+                    font-family: 'Open Sans', sans-serif;
+                    background: linear-gradient(135deg, #1a4a2e 0%, #0d2818 100%);
+                    min-height: 100vh;
+                    color: #f0f0f0;
+                    line-height: 1.6;
+                }
+                .navbar {
+                    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+                    background: rgba(13, 40, 24, 0.95);
+                    backdrop-filter: blur(10px);
+                    padding: 15px 0;
+                    border-bottom: 2px solid rgba(77, 156, 110, 0.3);
+                    transition: all 0.3s ease;
+                }
+                .category-nav {
+                    position: fixed; top: 85px; left: 0; right: 0;
+                    padding: 10px 0; z-index: 997;
+                    background: rgba(10, 28, 18, 0.97);
+                    border-bottom: 2px solid rgba(94, 204, 122, 0.5);
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+                }
+                .category-nav::before, .category-nav::after {
+                    content: ''; position: absolute; top: 0; bottom: 0; width: 40px;
+                    pointer-events: none; z-index: 1;
+                }
+                .category-nav::before {
+                    left: 0; background: linear-gradient(90deg, rgba(10, 32, 18, 0.9) 0%, transparent 100%);
+                }
+                .category-nav::after {
+                    right: 0; background: linear-gradient(-90deg, rgba(10, 32, 18, 0.9) 0%, transparent 100%);
+                }
+                .category-nav-list {
+                    display: flex; gap: 6px; justify-content: flex-start; flex-wrap: nowrap;
+                    max-width: 1400px; margin: 0 auto; padding: 0 15px; width: max-content;
+                }
+                .category-nav-item {
+                    display: inline-flex; align-items: center; padding: 10px 16px;
+                    background: rgba(77, 156, 110, 0.2);
+                    border: 1.5px solid rgba(77, 156, 110, 0.4);
+                    border-radius: 20px; color: #c5f0c5; font-size: 0.85em;
+                    font-weight: 500; cursor: pointer; transition: all 0.3s ease;
+                    text-transform: capitalize; letter-spacing: 0.3px; white-space: nowrap;
+                    user-select: none; -webkit-tap-highlight-color: transparent;
+                    scroll-snap-align: start; flex-shrink: 0;
+                }
+                .category-nav-item:hover {
+                    background: rgba(77, 156, 110, 0.4); border-color: #7dd87d;
+                    color: #ffffff; transform: translateY(-3px);
+                    box-shadow: 0 6px 20px rgba(77, 156, 110, 0.5);
+                }
+                .category-nav-item:active { transform: scale(0.95); }
+                .category-nav-item.active {
+                    background: linear-gradient(135deg, #5ecc7a 0%, #4a9c6e 100%);
+                    border-color: #8fff8f; color: white;
+                    box-shadow: 0 4px 20px rgba(94, 204, 122, 0.6);
+                    transform: translateY(-3px); font-weight: 700;
+                }
+                .category-nav-item.all.active {
+                    background: linear-gradient(135deg, #7dd87d 0%, #5ecc7a 100%);
+                }
+                .container {
+                    max-width: 1400px; margin: 0 auto; padding: 140px 20px 20px;
+                }
+                .navbar.scrolled {
+                    background: rgba(13, 40, 24, 0.98);
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                }
+                .navbar-container {
+                    max-width: 1100px; margin: 0 auto; padding: 0 20px;
+                    display: flex; justify-content: space-between; align-items: center; gap: 20px;
+                }
+                .navbar-logo {
+                    font-family: 'Playfair Display', serif; font-size: 2em; font-weight: 700;
+                    color: #7dd87d; text-decoration: none; letter-spacing: 3px;
+                    text-shadow: 0 0 15px rgba(125, 216, 125, 0.4);
+                    display: flex; align-items: center; gap: 10px;
+                }
+                .navbar-logo::before { content: '🍃'; font-size: 1.2em; }
+                .navbar-menu {
+                    display: flex; gap: 40px; list-style: none;
+                }
+                .navbar-menu a {
+                    color: #c5f0c5; text-decoration: none; font-size: 1em;
+                    font-weight: 500; letter-spacing: 1px; transition: all 0.3s ease;
+                    padding: 8px 0; position: relative;
+                }
+                .navbar-menu a::after {
+                    content: ''; position: absolute; bottom: 0; left: 0; width: 0;
+                    height: 2px; background: #7dd87d; transition: width 0.3s ease;
+                }
+                .navbar-menu a:hover { color: #7dd87d; }
+                .navbar-menu a:hover::after { width: 100%; }
+                .navbar-cta {
+                    background: linear-gradient(135deg, #4a9c6e 0%, #3d8c5e 100%);
+                    color: white !important; padding: 10px 25px !important;
+                    border-radius: 30px; transition: all 0.3s ease !important;
+                }
+                .navbar-cta:hover {
+                    background: linear-gradient(135deg, #5ecc7a 0%, #4a9c6e 100%) !important;
+                    transform: translateY(-2px);
+                }
+                .navbar-cta::after { display: none !important; }
+                .navbar-toggle {
+                    display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 5px;
+                }
+                .navbar-toggle span {
+                    width: 28px; height: 3px; background: #7dd87d;
+                    border-radius: 3px; transition: all 0.3s ease;
+                }
+                .language-selector { position: relative; margin-left: auto; }
+                .language-dropdown {
+                    display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+                    background: rgba(77, 156, 110, 0.15);
+                    border: 1.5px solid rgba(77, 156, 110, 0.3);
+                    border-radius: 25px; color: #c5f0c5; font-size: 0.9em;
+                    font-weight: 500; cursor: pointer; transition: all 0.3s ease; user-select: none;
+                }
+                .language-dropdown:hover {
+                    background: rgba(77, 156, 110, 0.25); border-color: #4a9c6e; color: #7dd87d;
+                }
+                .language-flag { font-size: 1.2em; }
+                .language-arrow { font-size: 0.7em; transition: transform 0.3s ease; }
+                .language-dropdown.active .language-arrow { transform: rotate(180deg); }
+                .language-menu {
+                    position: absolute; top: calc(100% + 8px); right: 0;
+                    background: rgba(13, 40, 24, 0.98);
+                    border: 1.5px solid rgba(77, 156, 110, 0.3);
+                    border-radius: 12px; min-width: 160px; padding: 8px 0;
+                    opacity: 0; visibility: hidden; transform: translateY(-10px);
+                    transition: all 0.3s ease; z-index: 1001; backdrop-filter: blur(10px);
+                }
+                .language-menu.active {
+                    opacity: 1; visibility: visible; transform: translateY(0);
+                }
+                .language-option {
+                    display: flex; align-items: center; gap: 12px; padding: 10px 20px;
+                    color: #c5f0c5; font-size: 0.95em; cursor: pointer; transition: all 0.2s ease;
+                }
+                .language-option:hover { background: rgba(77, 156, 110, 0.15); color: #7dd87d; }
+                .language-option.active { background: rgba(77, 156, 110, 0.2); color: #7dd87d; }
+                .language-option-flag { font-size: 1.3em; }
+                .language-option-code { font-weight: 600; color: #7dd87d; min-width: 35px; }
+                header {
+                    text-align: center; padding: 40px 20px; border-bottom: 3px solid #4a9c6e;
+                    margin-bottom: 40px; background: rgba(0, 0, 0, 0.2); border-radius: 10px;
+                }
+                h1 {
+                    font-size: 3.5em; color: #7dd87d; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                    margin-bottom: 10px; letter-spacing: 3px;
+                }
+                .subtitle { font-size: 1.3em; color: #a8e6a1; font-style: italic; }
+                .category {
+                    margin-bottom: 50px; background: rgba(255, 255, 255, 0.05);
+                    border-radius: 15px; padding: 25px; border: 2px solid #3d8c5e;
+                    transition: transform 0.3s ease;
+                }
+                .category:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 30px rgba(77, 156, 110, 0.3);
+                }
+                .category-title {
+                    font-size: 2.2em; color: #5ecc7a; margin-bottom: 25px;
+                    padding-bottom: 15px; border-bottom: 2px solid #4a9c6e;
+                    text-transform: capitalize; letter-spacing: 2px;
+                    display: flex; align-items: center; gap: 15px;
+                }
+                .category-title::before { content: '🌿'; font-size: 0.8em; }
+                .menu-grid {
+                    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+                    gap: 25px; margin-top: 20px;
+                }
+                .menu-item {
+                    background: linear-gradient(145deg, #2a5c3a 0%, #1e4530 100%);
+                    border-radius: 12px; overflow: hidden; transition: all 0.4s ease;
+                    border: 1px solid #4a9c6e; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+                    height: 100%; display: flex; flex-direction: column;
+                }
+                .menu-item:hover {
+                    transform: translateY(-8px);
+                    box-shadow: 0 15px 40px rgba(77, 156, 110, 0.45);
+                }
+                .menu-item-image {
+                    width: 100%; height: 520px; object-fit: cover; display: block;
+                    border-bottom: 3px solid #3d8c5e; transition: transform 0.5s ease;
+                }
+                .menu-item:hover .menu-item-image { transform: scale(1.08); }
+                .menu-item-name {
+                    padding: 18px 18px 8px; font-size: 1.15em; color: #c5f0c5;
+                    text-align: center; font-weight: 600; letter-spacing: 1px;
+                    background: linear-gradient(180deg, rgba(26, 69, 48, 0.6) 0%, rgba(20, 55, 38, 0.8) 100%);
+                }
+                .menu-item-price {
+                    padding: 0 18px 18px; font-size: 1.05em; color: #7dd87d;
+                    text-align: center; font-weight: 700;
+                    background: linear-gradient(180deg, rgba(20, 55, 38, 0.8) 0%, rgba(26, 69, 48, 0.6) 100%);
+                }
+                .menu-item-details {
+                    padding: 10px 18px; font-size: 0.85em; color: #a8e6a1;
+                    text-align: center; font-style: italic;
+                    background: linear-gradient(180deg, rgba(13, 40, 24, 0.9) 0%, rgba(20, 55, 38, 0.7) 100%);
+                    border-top: 1px solid rgba(77, 156, 110, 0.2);
+                }
+                .modal-overlay {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+                    z-index: 2000; display: none; justify-content: center; align-items: center;
+                    opacity: 0; transition: opacity 0.3s ease;
+                }
+                .modal-overlay.active { display: flex; opacity: 1; }
+                .modal-content {
+                    background: linear-gradient(145deg, #1a4a2e 0%, #0d2818 100%);
+                    border: 2px solid #4a9c6e; border-radius: 16px; padding: 30px;
+                    max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;
+                    box-shadow: 0 20px 60px rgba(77, 156, 110, 0.3);
+                    transform: scale(0.9); transition: transform 0.3s ease; position: relative;
+                }
+                .modal-overlay.active .modal-content { transform: scale(1); }
+                .modal-close {
+                    position: absolute; top: 15px; right: 15px;
+                    background: rgba(77, 156, 110, 0.2);
+                    border: 1.5px solid rgba(77, 156, 110, 0.4);
+                    color: #7dd87d; font-size: 1.5em; width: 36px; height: 36px;
+                    border-radius: 50%; cursor: pointer;
+                    display: flex; align-items: center; justify-content: center;
+                    transition: all 0.3s ease;
+                }
+                .modal-close:hover {
+                    background: rgba(77, 156, 110, 0.4); transform: scale(1.1);
+                }
+                .modal-title {
+                    font-family: 'Playfair Display', serif; font-size: 1.8em; color: #7dd87d;
+                    margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #4a9c6e;
+                }
+                .modal-price {
+                    font-size: 1.4em; color: #5ecc7a; font-weight: 700; margin-bottom: 15px;
+                }
+                .modal-description {
+                    font-size: 1em; color: #c5f0c5; line-height: 1.7;
+                }
+                .modal-description strong { color: #7dd87d; }
+                .category-header { display: flex; align-items: center; gap: 10px; }
+                .category-icon { font-size: 0.6em; }
+                .drink-subcategory {
+                    margin-top: 30px; padding-top: 20px; border-top: 2px dashed #4a9c6e;
+                }
+                .drink-subcategory:first-child {
+                    margin-top: 10px; padding-top: 10px; border-top: none;
+                }
+                .drink-subcategory-title {
+                    font-size: 1.6em; color: #6fd483; margin-bottom: 20px; padding-left: 10px;
+                    border-left: 4px solid #5ecc7a; letter-spacing: 1px;
+                    display: flex; align-items: center; gap: 10px;
+                }
+                .drink-subcategory-title::before { content: '🥤'; font-size: 0.7em; }
+                footer {
+                    text-align: center; padding: 30px; margin-top: 50px;
+                    border-top: 2px solid #4a9c6e; color: #8fc98f; font-size: 0.9em;
+                }
+                @media (max-width: 1024px) {
+                    .menu-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+                }
+                @media (max-width: 768px) {
+                    .navbar-menu {
+                        position: fixed; top: 160px; left: 0; right: 0;
+                        background: rgba(13, 40, 24, 0.98); flex-direction: column;
+                        padding: 30px; gap: 20px; transform: translateY(-150%); opacity: 0;
+                        transition: all 0.3s ease; border-bottom: 2px solid rgba(77, 156, 110, 0.3);
+                        z-index: 998;
+                    }
+                    .navbar-menu.active { transform: translateY(0); opacity: 1; }
+                    .navbar-toggle { display: flex; z-index: 1002; }
+                    .category-nav {
+                        top: 100px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+                        scrollbar-width: none; -ms-overflow-style: none;
+                        scroll-snap-type: x mandatory; -webkit-scroll-snap-type: x mandatory;
+                        touch-action: pan-x;
+                    }
+                    .category-nav::-webkit-scrollbar { display: none; }
+                    .category-title { font-size: 1.6em; }
+                    .menu-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
+                    .drink-subcategory-title { font-size: 1.3em; }
+                    .container { padding-top: 170px; }
+                    .category-nav-list {
+                        display: flex; gap: 6px; justify-content: flex-start; flex-wrap: nowrap;
+                        width: max-content; max-width: none; margin: 0; padding: 0 15px;
+                    }
+                    .category-nav-item {
+                        display: inline-flex; align-items: center; padding: 12px 20px;
+                        background: rgba(60, 120, 80, 0.35); border: 2px solid #5ecc7a;
+                        border-radius: 20px; color: #e0ffe0; font-size: 0.9em; font-weight: 600;
+                        cursor: pointer; transition: all 0.3s ease; text-transform: capitalize;
+                        letter-spacing: 0.5px; white-space: nowrap; user-select: none;
+                        -webkit-tap-highlight-color: transparent; scroll-snap-align: start;
+                        flex-shrink: 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    }
+                }
+                @media (max-width: 480px) {
+                    .category-title { font-size: 1.3em; }
+                    .menu-grid { grid-template-columns: 1fr; gap: 15px; }
+                    .menu-item-image { height: 420px; }
+                    .drink-subcategory-title { font-size: 1.1em; }
+                    .navbar-logo { font-size: 1.6em; }
+                    .language-dropdown { padding: 6px 12px; font-size: 0.8em; }
+                    .language-flag { font-size: 1em; }
+                }
+            </style>
+        </head>
+        <body>
+            <!-- ========== NAVBAR ========== -->
+            <nav class="navbar" id="navbar">
+                <div class="navbar-container">
+                    <a href="index.html" class="navbar-logo">Tavola-Verde</a>
+                    <div class="navbar-toggle" id="navbarToggle">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <ul class="navbar-menu" id="navbarMenu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#about">About</a></li>
+                        <li><a href="index.html#reviews">Reviews</a></li>
+                        <li><a href="menu.html" class="navbar-cta">Menu</a></li>
+                    </ul>
+                    <div class="language-selector">
+                        <div class="language-dropdown" id="languageDropdown">
+                            <span class="language-flag" id="currentFlag">🇬🇧</span>
+                            <span class="language-code" id="currentCode">ENG</span>
+                            <span class="language-arrow">▼</span>
+                        </div>
+                        <div class="language-menu" id="languageMenu">
+                            <div class="language-option active" data-lang="eng">
+                                <span class="language-option-flag">🇬🇧</span>
+                                <span>English</span>
+                                <span class="language-option-code">ENG</span>
+                            </div>
+                            <div class="language-option" data-lang="rus">
+                                <span class="language-option-flag">🇷🇺</span>
+                                <span>Русский</span>
+                                <span class="language-option-code">RUS</span>
+                            </div>
+                            <div class="language-option" data-lang="kaz">
+                                <span class="language-option-flag">🇰🇿</span>
+                                <span>Қазақша</span>
+                                <span class="language-option-code">KAZ</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </nav>
 
-                <ul class="navbar-menu" id="navbarMenu">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="index.html#about">About</a></li>
-                    <li><a href="index.html#reviews">Reviews</a></li>
-                    <li><a href="menu.html" class="navbar-cta">Menu</a></li>
-                </ul>
-
-                <div class="language-selector">
-                    <div class="language-dropdown" id="languageDropdown">
-                        <span class="language-flag" id="currentFlag">🇬🇧</span>
-                        <span class="language-code" id="currentCode">ENG</span>
-                        <span class="language-arrow">▼</span>
-                    </div>
-                    <div class="language-menu" id="languageMenu">
-                        <div class="language-option active" data-lang="eng">
-                            <span class="language-option-flag">🇬🇧</span>
-                            <span>English</span>
-                            <span class="language-option-code">ENG</span>
-                        </div>
-                        <div class="language-option" data-lang="rus">
-                            <span class="language-option-flag">🇷🇺</span>
-                            <span>Русский</span>
-                            <span class="language-option-code">RUS</span>
-                        </div>
-                        <div class="language-option" data-lang="kaz">
-                            <span class="language-option-flag">🇰🇿</span>
-                            <span>Қазақша</span>
-                            <span class="language-option-code">KAZ</span>
-                        </div>
-                    </div>
+            <!-- ========== CATEGORY FILTER NAV ========== -->
+            <div class="category-nav" id="categoryNav">
+                <div class="category-nav-list">
+                    <button class="category-nav-item all active" data-category="all">All</button>
+                    <button class="category-nav-item" data-category="breakfasts">Breakfasts</button>
+                    <button class="category-nav-item" data-category="salads">Salads</button>
+                    <button class="category-nav-item" data-category="soups">Soups</button>
+                    <button class="category-nav-item" data-category="meat-dishes">Meat Dishes</button>
+                    <button class="category-nav-item" data-category="fish">Fish</button>
+                    <button class="category-nav-item" data-category="pastas">Pastas</button>
+                    <button class="category-nav-item" data-category="burgers">Burgers</button>
+                    <button class="category-nav-item" data-category="bruschettas">Bruschettas</button>
+                    <button class="category-nav-item" data-category="appetizers">Appetizers</button>
+                    <button class="category-nav-item" data-category="for-groups">For Groups</button>
+                    <button class="category-nav-item" data-category="pizza">Pizza</button>
+                    <button class="category-nav-item" data-category="desserts">Desserts</button>
+                    <button class="category-nav-item" data-category="drinks">Drinks</button>
+                    <button class="category-nav-item" data-category="alcoholic-drinks">Alcoholic Drinks</button>
                 </div>
             </div>
-        </nav>
 
-        <!-- ========== CATEGORY FILTER NAV ========== -->
-        <div class="category-nav" id="categoryNav">
-            <div class="category-nav-list">
-                <button class="category-nav-item all active" data-category="all">All</button>
-                <button class="category-nav-item" data-category="breakfasts">Breakfasts</button>
-                <button class="category-nav-item" data-category="salads">Salads</button>
-                <button class="category-nav-item" data-category="soups">Soups</button>
-                <button class="category-nav-item" data-category="meat-dishes">Meat Dishes</button>
-                <button class="category-nav-item" data-category="fish">Fish</button>
-                <button class="category-nav-item" data-category="pastas">Pastas</button>
-                <button class="category-nav-item" data-category="burgers">Burgers</button>
-                <button class="category-nav-item" data-category="bruschettas">Bruschettas</button>
-                <button class="category-nav-item" data-category="appetizers">Appetizers</button>
-                <button class="category-nav-item" data-category="for-groups">For Groups</button>
-                 <button class="category-nav-item" data-category="pizza">Pizza</button>
-                 <button class="category-nav-item" data-category="desserts">Desserts</button>
-                 <button class="category-nav-item" data-category="drinks">Drinks</button>
-                 <button class="category-nav-item" data-category="alcoholic-drinks">Alcoholic Drinks</button>
-             </div>
-        </div>
+            <div class="container">
+                <header>
+                    <h1>🍃 Tavola-Verde</h1>
+                    <p class="subtitle">Fresh & Green Dining Experience</p>
+                </header>
+                <div id="menu-container"></div>
+                <footer>
+                    <p>All dishes prepared with fresh ingredients • Tavola-Verde Restaurant 2026</p>
+                </footer>
+            </div>
 
-        <div class="container">
-        <header>
-            <h1>🍃 Tavola-Verde</h1>
-            <p class="subtitle">Fresh & Green Dining Experience</p>
-        </header>
+            <!-- Modal for item description -->
+            <div class="modal-overlay" id="descriptionModal">
+                <div class="modal-content">
+                    <button class="modal-close" id="modalClose">&times;</button>
+                    <h3 class="modal-title" id="modalTitle"></h3>
+                    <p class="modal-price" id="modalPrice"></p>
+                    <p class="modal-description" id="modalDescription"></p>
+                </div>
+            </div>
 
-        <div id="menu-container"></div>
+            <script>
+                function formatCategoryName(category) {
+                    const names = {
+                        'breakfasts': 'Breakfasts', 'salads': 'Salads', 'soups': 'Soups',
+                        'meat dishes': 'Meat Dishes', 'fish': 'Fish', 'pastas': 'Pastas',
+                        'burgers': 'Burgers', 'bruschettas': 'Bruschettas',
+                        'appetizers': 'Appetizers', 'for groups': 'For Groups',
+                        'pizza': 'Pizza', 'desserts': 'Desserts', 'drinks': 'Drinks'
+                    };
+                    return names[category] || category;
+                }
 
-        <footer>
-            <p>All dishes prepared with fresh ingredients • Tavola-Verde Restaurant 2026</p>
-        </footer>
-    </div>
+                function getImagePath(category, item) {
+                    const filenameMap = {
+                        // appetizers
+                        'креветки жаренные': 'fried shrimp', 'мини чебуреки': 'mini chebureki',
+                        'нагетсы': 'nuggets', 'сырные палочки': 'cheese sticks',
+                        // breakfasts
+                        'болгарский перец запечённый в ореховом соусе': 'baked pepper in walnut sauce',
+                        'вареники домашние с картофелем': 'homemade dumplings with potato',
+                        'деревенский завтрак': 'village breakfast', 'каша овсяная': 'oatmeal',
+                        'каша рисовая': 'rice porridge', 'омлет греческий': 'greek omelette',
+                        'омлет флоренция': 'omelette florentine', 'сырники': 'syrniki',
+                        'турецкий завтрак': 'turkish breakfast', 'шакшука': 'shakshuka',
+                        // bruschettas
+                        'брускетта с креветками': 'bruschetta with shrimp',
+                        'брускетта с лососем и яйцом пашот': 'bruschetta with salmon and poached egg',
+                        'брускетта с нежным паштетом и запеченными помидорами': 'bruschetta with pate and roasted tomatoes',
+                        // burgers
+                        'бургер говяжий': 'beef burger', 'бургер куриный': 'chicken burger',
+                        // desserts
+                        'шоколадный уют': 'chocolate comfort', 'штрудель': 'strudel',
+                        'ягодный крем-смузи': 'berry cream smoothie',
+                        // fish
+                        'дорадо': 'dorado', 'семга запеченная': 'baked salmon',
+                        'форель с овощами гриль': 'trout with grilled vegetables',
+                        // for groups
+                        'бешпармак': 'beshparmak', 'малый сет': 'small set',
+                        'микс колбасок гриль': 'grilled sausage mix', 'мясное ассорти': 'meat platter',
+                        'рыбный сет': 'fish set', 'сет ассорти': 'assorted set',
+                        // meat dishes
+                        'бефстроганов говяжий': 'beef stroganoff', 'бефстроганов куриный': 'chicken stroganoff',
+                        'бифштекс': 'beefsteak', 'картошка по домашнему': 'homestyle potatoes',
+                        'корейка ягненка': 'lamb rack', 'перепелка запеченная с киноа': 'baked quail with quinoa',
+                        'сахарная кость': 'sugar bone', 'стейк медальон': 'medallion steak',
+                        'стейк рибай': 'ribeye steak', 'стейк тибон': 'tbone steak',
+                        'тай куырдак': 'tai kuirdak',
+                        // pastas
+                        'спагетти болоньезе': 'spaghetti bolognese', 'спагетти карбонара': 'spaghetti carbonara',
+                        'спагетти с морепродуктами': 'spaghetti with seafood',
+                        'спагетти шпинатные в сливочном соусе': 'spinach spaghetti in cream sauce',
+                        'фетучини альфредо': 'fettuccine alfredo', 'японский удон': 'japanese udon',
+                        // pizza
+                        'пицца 4 сезона': 'pizza 4 seasons', 'пицца болоньезе': 'pizza bolognese',
+                        'пицца куриная': 'pizza chicken', 'пицца маргарита': 'pizza margherita',
+                        'пицца пепперони': 'pizza pepperoni',
+                        'хачапури по-аджарски': 'khachapuri adjarian',
+                        'хачапури по-мегрельски': 'khachapuri mingrelian',
+                        // salads
+                        'микс-салат с утиной грудкой': 'mixed salad with duck breast',
+                        'салат авокадо verde': 'avocado verde salad',
+                        'салат греческий с нежным сыром': 'greek salad with soft cheese',
+                        'салат зеленая рапсодия': 'green rhapsody salad',
+                        'салат ривьера': 'riviera salad',
+                        'салат с хрустящими баклажанами': 'salad with crispy eggplant',
+                        'салат цезарь с курицей и чиабаттой': 'caesar salad with chicken and ciabatta',
+                        // soups
+                        'бульон из перепелки с овощами': 'quail broth with vegetables',
+                        'крем-суп из брокколи': 'broccoli cream soup', 'мисо суп': 'miso soup',
+                        'пельмени по домашнему': 'homestyle pelmeni', 'рамен': 'ramen',
+                        'суп с фрикадельками': 'soup with meatballs',
+                        'суп чечевичный': 'lentil soup', 'том ям': 'tom yam'
+                    };
+                    let fileName = filenameMap[item] || item;
+                    const categoryFolderMap = {
+                        'breakfasts': 'breakfasts', 'salads': 'salads', 'soups': 'soups',
+                        'meat dishes': 'meat-dishes', 'fish': 'fish', 'pastas': 'pastas',
+                        'burgers': 'burgers', 'bruschettas': 'bruschettas',
+                        'appetizers': 'appetizers', 'for groups': 'for-groups',
+                        'pizza': 'pizza', 'desserts': 'desserts'
+                    };
+                    const folder = categoryFolderMap[category];
+                    if (!folder) return null;
+                    return `menu_images/${folder}/${fileName}.jpg`;
+                }
 
-    <!-- Modal for item description -->
-    <div class="modal-overlay" id="descriptionModal">
-        <div class="modal-content">
-            <button class="modal-close" id="modalClose">&times;</button>
-            <h3 class="modal-title" id="modalTitle"></h3>
-            <p class="modal-price" id="modalPrice"></p>
-            <p class="modal-description" id="modalDescription"></p>
-        </div>
-    </div>
+                // === УЛУЧШЕННАЯ НОРМАЛИЗАЦИЯ ДЛЯ АЛКОГОЛЯ ===
+                function normalizeName(name) {
+                    let normalized = name.toLowerCase().trim().replace(/\s+/g, ' ');
+                    
+                    // Маппинг коротких названий → полные ключи в getItemDetails
+                    const alcoholAliasMap = {
+                        'grey goose': 'grey goose 50 мл',
+                        'absolut': 'absolut original 50 мл',
+                        'wyborowa': 'wyborowa 50 мл',
+                        'oakheart': 'oakheart original 50 мл',
+                        'tavernello': 'tavernello vino bianco d\'italia',
+                        'tavernello white': 'tavernello vino rosso d\'italia amabil',
+                        'marina': 'la marina cotes de gascogne sauvignon blanc',
+                        'andron': 'chateau andron medoc',
+                        'ak arba': 'ak arba assa valley almaty',
+                        'lagyl arba': 'lagyl arba assa valley',
+                        'ararat': 'ararat', 'beefeater': 'beefeater', 'olmeca tekila': 'olmeca tekila',
+                        'heineken': 'heineken', 'jameson': 'jameson', 'cave de turckheim': 'cave de turckheim'
+                    };
+                    
+                    const aliasMap = {
+                        'боржоми': 'боржоми', 'borjomi': 'боржоми',
+                        'тассай': 'tassay', 'tassay': 'tassay',
+                        'cocacola 0.25l': 'cocacola 0.25l',
+                        'cocacola 1l': 'cocacola 1l',
+                        'кока-кола': 'cocacola', 'cocacola': 'cocacola',
+                        'сан пеллегрино': 'san pellegrino', 'sanpellegrino': 'san pellegrino',
+                        'пина колада': 'pina colada', 'pina colada': 'pina colada',
+                        'лонг айленд': 'long island', 'long island': 'long island',
+                        'латте': 'latte', 'latte': 'latte', 'ice latte': 'ice latte',
+                        'эспрессо': 'эспрессо', 'каппучино': 'каппучино', 'американо': 'американо',
+                        'тихий ирландец': 'тихий ирландец', 'клубничный алиби': 'клубничный алиби',
+                        'мохито': 'мохито', 'mojito alc': 'мохито', 'дюшес': 'дюшес',
+                        'ягодный': 'ягодный', 'верде фреш': 'verde fresh', 'раф классический': 'раф классический'
+                    };
+                    
+                    // Сначала проверяем алкогольные алиасы
+                    if (alcoholAliasMap[normalized]) {
+                        return alcoholAliasMap[normalized];
+                    }
+                    // Затем общие алиасы
+                    if (aliasMap[normalized]) {
+                        normalized = aliasMap[normalized];
+                    }
+                    
+                    // Очистка от объёмов и спецсимволов (но не для алкоголя!)
+                    if (!alcoholAliasMap[normalized]) {
+                        normalized = normalized.replace(/\s*\([^)]*\)/g, '').replace(/[.,]/g, '')
+                            .replace(/\s+(мл|л|г|кг)\b/g, '').replace(/\b\d+[,.]?\d*\s*(мл|л|г|кг)?\b/g, '').trim();
+                    }
+                    return normalized;
+                }
 
-    <script>
+                // === ОБНОВЛЁННЫЕ ДАННЫЕ (с короткими ключами для алкоголя) ===
+                function getItemDetails() {
+                    return {
+                        // Bruschettas
+                        'брускетта с нежным паштетом и запеченными помидорами': { price: '2 600 ₸', desc: 'Хрустящая чиабатта с домашним паштетом и томатами, запеченными до карамелизации' },
+                        'брускетта с креветками': { price: '3 300 ₸', desc: 'Обжаренные креветки на поджаренном хлебе с легкой заправкой и свежей зеленью' },
+                        'брускетта с лососем и яйцом пашот': { price: '3 300 ₸', desc: 'Слабосоленый лосось и яйцо пашот с жидким желтком на хрустящей основе' },
+                        
+                        // Meat Dishes
+                        'бифштекс': { price: '4 200 ₸', desc: 'Рубленая мраморная говядина с грибами в нежных сливках. Подается с картофельным пюре' },
+                        'бефстроганов говяжий': { price: '3 200 ₸', desc: 'Классические ломтики говядины с шампиньонами в сливочном соусе с картофельным пюре' },
+                        'бефстроганов куриный': { price: '3 000 ₸', desc: 'Куриное филе с грибами, сливками и пикантными солеными огурцами. Подается с пюре' },
+                        'стейк медальон': { price: '6 900 ₸', desc: '250 гр. Сочная вырезка из говядины, приготовленная на гриле до нужной степени прожарки' },
+                        'перепелка запеченная с киноа': { price: '4 700 ₸', desc: 'Нежное мясо перепелки, запеченное до золотистой корочки, с гарниром из киноа' },
+                        'стейк рибай': { price: '3 100 ₸/100г', desc: 'Традиционный отруб с высокой мраморностью и насыщенным вкусом. Цена за 100 г' },
+                        'стейк тибон': { price: '2 800 ₸/100г', desc: 'Крупный стейк, сочетающий два вида мяса на Т-образной кости. Цена за 100 г' },
+                        'сахарная кость': { price: '3 100 ₸', desc: 'Запеченная говяжья кость с насыщенным вкусом и нежной текстурой костного мозга' },
+                        'тай куырдак': { price: '4 400 ₸', desc: 'Традиционное жаркое из конины, томленой с картофелем и луком' },
+                        'картошка по домашнему': { price: '3 400 ₸', desc: 'Сытное сочетание обжаренного картофеля, куриного филе и грибов' },
+                        'корейка ягненка': { price: '4 300 ₸', desc: 'Сочная корейка, запеченная с миксом сезонных овощей' },
+                        
+                        // Salads
+                        'салат греческий с нежным сыром': { price: '2 900 ₸', desc: 'Свежие овощи, оливки и черри с мягким сыром на подушке из листьев салата' },
+                        'салат цезарь с курицей и чиабаттой': { price: '2 900 ₸', desc: 'Обжаренное филе, пармезан и перепелиные яйца с хрустящими гренками из чиабатты' },
+                        'салат ривьера': { price: '3 600 ₸', desc: 'Теплые креветки с рукколой и томатами черри под освежающей цитрусовой заправкой' },
+                        'салат авокадо verde': { price: '3 400 ₸', desc: 'Легкий микс из спелого авокадо, яблока, листьев салата и томатов черри' },
+                        'микс-салат с утиной грудкой': { price: '3 100 ₸', desc: 'Благородное сочетание подкопченной утки, сочного апельсина и свежей зелени' },
+                        'салат с хрустящими баклажанами': { price: '3 200 ₸', desc: 'Обжаренные до хруста баклажаны с томатами и нежным творожным сыром' },
+                        'салат зеленая рапсодия': { price: '2 900 ₸', desc: 'Куриное филе, грибы и черри в пикантном кисло-сладком соусе' },
+                        
+                        // Fish
+                        'форель с овощами гриль': { price: '1 900 ₸/100г', desc: 'Нежная рыба со сливочным соусом и гарниром из овощей на гриле. Цена за 100 г' },
+                        'дорадо': { price: '2 200 ₸/100г', desc: 'Целая рыба, запеченная с ароматными травами и свежей зеленью. Цена за 100 г' },
+                        'семга запеченная': { price: '6 900 ₸', desc: 'Стейк из сёмги со спаржей в сливочном соусе, украшенный икрой' },
+                        
+                        // Soups
+                        'крем-суп из брокколи': { price: '2 700 ₸', desc: 'Бархатистый суп из брокколи и моркови с чеддером и молоком' },
+                        'том ям': { price: '3 500 ₸', desc: 'Классический острый суп с креветками и морепродуктами. Подается с рисом' },
+                        'суп чечевичный': { price: '1 600 ₸', desc: 'Плотный и согревающий суп из красной чечевицы со специями' },
+                        'пельмени по домашнему': { price: '2 500 ₸', desc: 'Мясные пельмени ручной лепки в наваристом прозрачном бульоне' },
+                        'мисо суп': { price: '3 600 ₸', desc: 'Японский суп с сёмгой, тофу, водорослями вакаме и грибами шиитаке' },
+                        'рамен': { price: '3 500 ₸', desc: 'Сытный суп с пшеничной лапшой, куриным филе, водорослями и яйцом' },
+                        'суп с фрикадельками': { price: '2 300 ₸', desc: 'Легкий бульон с домашней лапшой и нежными мясными шариками' },
+                        'бульон из перепелки с овощами': { price: '3 500 ₸', desc: 'Прозрачный диетический бульон с ценным мясом перепелки' },
+                        
+                        // For Groups
+                        'бешпармак': { price: '33 600 ₸', desc: 'На заказ, 6 персон; Конина, казы, тонко раскатанное тесто и густой луковый соус' },
+                        'сет ассорти': { price: '5 500 ₸', desc: 'Набор для большой компании: колбаски, наггетсы, крылышки и картофельные дольки' },
+                        'малый сет': { price: '5 200 ₸', desc: 'Закуски к напиткам: крылышки, мини-чебуреки, луковые кольца и гарлики' },
+                        'мясное ассорти': { price: '35 000 ₸', desc: 'Гранд-плато: рибай, ти-бон, колбаски, медальон, утка, цыпленок и овощи' },
+                        'микс колбасок гриль': { price: '4 300 ₸', desc: 'Ассорти сочных колбасок с квашеной капустой и картофелем' },
+                        'рыбный сет': { price: '39 000 ₸', desc: 'На 4-5 персон; Роскошное плато: форель, дорадо, семга, скумбрия и судак с рисом' },
+                        
+                        // Pastas
+                        'фетучини альфредо': { price: '3 500 ₸', desc: 'Паста с куриным филе и грибами в густом сливочном соусе с черри' },
+                        'спагетти с морепродуктами': { price: '4 700 ₸', desc: 'Спагетти с тигровыми креветками и кусочками лосося в нежных сливках' },
+                        'спагетти болоньезе': { price: '3 600 ₸', desc: 'Классическая паста с насыщенным соусом из говяжьего фарша и томатов' },
+                        'спагетти карбонара': { price: '3 600 ₸', desc: 'Паста со сливками, томатами и ароматом подкопченной говядины' },
+                        'спагетти шпинатные в сливочном соусе': { price: '3 600 ₸', desc: 'Зеленая паста с куриным филе в мягком сливочном соусе' },
+                        'японский удон': { price: '3 000 ₸', desc: 'Пшеничная лапша с курицей и овощным миксом в фирменном соусе' },
+                        
+                        // Pizza
+                        'пицца пепперони': { price: '3 800 ₸', desc: 'Пикантная пицца с сыром моцарелла и острыми колбасками' },
+                        'пицца маргарита': { price: '3 100 ₸', desc: 'Классическое сочетание томатного соуса, моцареллы и трав' },
+                        'пицца куриная': { price: '3 500 ₸', desc: 'С нежным филе курицы, томатами и расплавленным сыром' },
+                        'пицца болоньезе': { price: '4 600 ₸', desc: 'Сытная пицца с мясным соусом из говядины и овощей' },
+                        'пицца 4 сезона': { price: '4 100 ₸', desc: 'Четыре сектора с разными начинками на одном тонком тесте' },
+                        'хачапури по-аджарски': { price: '3 400 ₸', desc: 'Традиционная лодочка с сырной начинкой и жидким желтком' },
+                        'хачапури по-мегрельски': { price: '3 400 ₸', desc: 'Грузинская лепешка с двойной порцией сыра внутри и снаружи' },
+                        
+                        // Burgers
+                        'бургер говяжий': { price: '3 800 ₸', desc: 'Сочная котлета из мраморной говядины на мягкой булке с овощами. С картофелем фри' },
+                        'бургер куриный': { price: '3 500 ₸', desc: 'Куриное филе гриль со свежим листом салата и фирменным соусом. С картофелем фри' },
+                        
+                        // Appetizers
+                        'креветки жаренные': { price: '4 400 ₸', desc: 'Сочные креветки, обжаренные до золотистой корочки' },
+                        'сырные палочки': { price: '2 500 ₸', desc: 'Хрустящая панировка и тягучий расплавленный сыр' },
+                        'нагетсы': { price: '1 050 ₸', desc: 'Нежное куриное филе в золотистой панировке' },
+                        'мини чебуреки': { price: '2 100 ₸', desc: 'Хрустящее тесто с сочной мясной начинкой' },
+                        
+                        // Bread
+                        'хлебная корзина': { price: '1 500 ₸', desc: 'Ассорти из свежего черного, белого хлеба и булочек' },
+                        'чесночный хлеб': { price: '900 ₸', desc: '4 шт. Хрустящие тосты с ароматным чесночным маслом' },
+                        'лепешка': { price: '500 ₸', desc: 'Свежеиспеченная пшеничная лепешка из печи' },
+                        'бауырсаки с балкаймаком': { price: '1 500 ₸', desc: 'Традиционная выпечка с нежным медовым кремом' },
+                        
+                        // Breakfasts
+                        'омлет греческий': { price: '3 600 ₸', desc: 'Со шпинатом, творогом, грибами и томатами в сливках' },
+                        'омлет флоренция': { price: '3 100 ₸', desc: 'С сыром чеддер, шампиньонами и свежим салатом' },
+                        'деревенский завтрак': { price: '2 900 ₸', desc: 'Яйца, говяжьи сосиски, картофельные дольки и тосты' },
+                        'турецкий завтрак': { price: '2 600 ₸', desc: 'Легкий сет с яйцом пашот, нутом и чиабаттой' },
+                        'шакшука': { price: '3 100 ₸', desc: 'Яйца в густом соусе из томатов, болгарского перца и зелени' },
+                        'сырники': { price: '2 400 ₸', desc: 'Домашние творожные сырники с ягодным джемом' },
+                        'каша рисовая': { price: 'от 1 600 ₸', desc: 'Нежная молочная каша с маслом, фруктами или орехами' },
+                        'каша овсяная': { price: 'от 1 600 ₸', desc: 'Нежная молочная каша с маслом, фруктами или орехами' },
+                        'вареники домашние с картофелем': { price: '1 500 ₸', desc: 'Домашние вареники с нежной картофельной начинкой' },
+                        
+                        // Desserts
+                        'штрудель': { price: '2 200 ₸', desc: 'Традиционная выпечка с яблоками, корицей и тонким тестом' },
+                        'шоколадный уют': { price: '2 600 ₸', desc: 'Насыщенный десерт с глубоким шоколадным вкусом' },
+                        'ягодный крем-смузи': { price: '2 200 ₸', desc: 'Легкое сливочное лакомство на основе лесных ягод' },
+                        
+                        // Wines (с короткими ключами для поиска)
+                        'tavernello': { price: '3 000 ₸', desc: '150 мл. Белое полусладкое вино с легким цветочно-фруктовым вкусом' },
+                        'tavernello vino bianco d\'italia': { price: '3 000 ₸', desc: '150 мл. Белое полусладкое вино с легким цветочно-фруктовым вкусом' },
+                        'tavernello white': { price: '3 000 ₸', desc: '150 мл. Красное полусладкое вино с мягким ягодным профилем' },
+                        'tavernello vino rosso d\'italia amabil': { price: '3 000 ₸', desc: '150 мл. Красное полусладкое вино с мягким ягодным профилем' },
+                        'san pellegrino': { price: '2 100 ₸', desc: 'Тоник популярной марки с характерным вкусом' },
+                        'gewurztraminer tradition': { price: '28 000 ₸', desc: '0.75 л. Ароматное белое полусладкое вино с нотками экзотических фруктов' },
+                        'marina': { price: '14 000 ₸', desc: 'Сухое белое вино с выраженной свежестью и цитрусовым вкусом' },
+                        'la marina cotes de gascogne sauvignon blanc': { price: '14 000 ₸', desc: 'Сухое белое вино с выраженной свежестью и цитрусовым вкусом' },
+                        'la marina cotes de gascogne cuvee rouge': { price: '15 000 ₸', desc: 'Сбалансированное красное сухое вино с фруктовыми тонами' },
+                        'andron': { price: '23 000 ₸', desc: '0.75 л. Благородное красное сухое вино из региона Медок' },
+                        'chateau andron medoc': { price: '23 000 ₸', desc: '0.75 л. Благородное красное сухое вино из региона Медок' },
+                        'ak arba assa valley almaty': { price: '16 000 ₸', desc: 'Элегантное белое сухое вино с чистым минеральным вкусом' },
+                        'lagyl arba assa valley': { price: '14 000 ₸', desc: 'Насыщенное красное сухое вино из долины Асса' },
+                        
+                        // Cocktails
+                        'клубничный алиби': { price: '3 000 ₸', desc: 'Ягодный коктейль с ярким ароматом свежей клубники' },
+                        'тихий ирландец': { price: '3 700 ₸', desc: 'Крепкий и глубокий микс с характерным послевкусием' },
+                        'pina colada': { price: '3 600 ₸', desc: 'Классическое сочетание рома, кокосового молока и ананаса' },
+                        'long island': { price: '4 400 ₸', desc: 'Мощный коктейль на основе пяти видов алкоголя с соком и колой' },
+                        
+                        // Spirits (с короткими и полными ключами)
+                        'grey goose': { price: '3 200 ₸', desc: 'Премиальная французская водка с исключительной мягкостью' },
+                        'grey goose 50 мл': { price: '3 200 ₸', desc: 'Премиальная французская водка с исключительной мягкостью' },
+                        'grey goose 0.5 л': { price: '29 000 ₸', desc: 'Премиальная французская водка с исключительной мягкостью' },
+                        'absolut': { price: '1 950 ₸', desc: 'Знаменитая шведская водка с чистым и глубоким вкусом' },
+                        'absolut original 50 мл': { price: '1 950 ₸', desc: 'Знаменитая шведская водка с чистым и глубоким вкусом' },
+                        'absolut original 0.5 л': { price: '18 000 ₸', desc: 'Знаменитая шведская водка с чистым и глубоким вкусом' },
+                        'wyborowa': { price: '1 800 ₸', desc: 'Классическая водка с мягким хлебным послевкусием' },
+                        'wyborowa 50 мл': { price: '1 800 ₸', desc: 'Классическая водка с мягким хлебным послевкусием' },
+                        'wyborowa 0.5 л': { price: '15 990 ₸', desc: 'Классическая водка с мягким хлебным послевкусием' },
+                        'oakheart': { price: '2 200 ₸', desc: 'Пряный ромовый напиток с нотками ванили и дуба' },
+                        'oakheart original 50 мл': { price: '2 200 ₸', desc: 'Пряный ромовый напиток с нотками ванили и дуба' },
+                        'ararat': { price: null, desc: 'Популярный армянский коньяк с мягким вкусом и нотами сухофруктов. Цену уточните' },
+                        'beefeater': { price: null, desc: 'Классический лондонский сухой джин с ярким можжевеловым ароматом' },
+                        'olmeca tekila': { price: null, desc: 'Традиционный мексиканский напиток из голубой агавы с бодрящим вкусом. Цену уточните' },
+                        'heineken': { price: '900 ₸', desc: '0.33 л. Мировой стандарт лагера с чистым солодовым вкусом' },
+                        'jameson': { price: null, desc: 'Ирландский виски с мягким характером' },
+                        'cave de turckheim': { price: null, desc: 'Французское игристое вино' },
+                        
+                        // Smoothies
+                        'berry': { price: '1 800 ₸', desc: '0.35 л. Густой ягодный коктейль из свежих лесных ягод' },
+                        'банана-малина': { price: '2 100 ₸', desc: '0.35 л. Идеальный баланс сладости банана и кислинки малины' },
+                        'apple orange': { price: '2 400 ₸', desc: '0.35 л. Сочетание яблочного и апельсинового вкусов' },
+                        'aloe fresh': { price: '2 500 ₸', desc: '0.35 л. Уникальный напиток с экстрактом алоэ' },
+                        'herbal green': { price: '1 800 ₸', desc: '0.35 л. Травяной зеленый коктейль для бодрости' },
+                        
+                        // Fresh Juices
+                        'апельсин': { price: '2 100 ₸', desc: '0.3 л. Свежевыжатый сок из сочных апельсинов' },
+                        'яблоко': { price: '1 900 ₸', desc: '0.3 л. Натуральный сок из отборных яблок' },
+                        'яблоко-морковь': { price: '1 900 ₸', desc: '0.3 л. Витаминный микс для пользы и вкуса' },
+                        'морковь': { price: '1 900 ₸', desc: '0.3 л. Чистый морковный сок со сливками на выбор' },
+                        
+                        // Lemonades
+                        'манго-маракуйя': { price: '1 200 / 2 400 ₸', desc: '0.35 л / 1 л. Экзотический вкус тропических фруктов' },
+                        'цитрусовый': { price: '1 200 / 2 400 ₸', desc: '0.35 л / 1 л. Заряд свежести апельсина и лимона' },
+                        'мохито': { price: '1 200 / 2 400 ₸', desc: '0.35 л / 1 л. Освежающая мята и бодрящий лайм' },
+                        'клубничный': { price: '1 200 / 2 400 ₸', desc: '0.35 л / 1 л. Сладкий вкус спелой садовой клубники' },
+                        'киви-маракуйя': { price: '1 200 / 2 400 ₸', desc: '0.35 л / 1 л. Оригинальное сочетание киви и экзотики' },
+                        'тропический': { price: '1 200 / 2 400 ₸', desc: '0.35 л / 1 л. Микс самых сочных южных фруктов' },
+                        
+                        // Tea & Coffee
+                        'эспрессо': { price: '1 090 ₸', desc: '70 мл' },
+                        'каппучино': { price: '1 400 ₸', desc: '400 мл' },
+                        'американо': { price: '1 090 – 1 300 ₸', desc: '300 мл / 400 мл' },
+                        'latte': { price: '1 190 ₸', desc: '250 мл' },
+                        'ice latte': { price: null, desc: '' },
+                        'чай ташкентский': { price: '2 300 ₸', desc: '1 литр. Пряное сочетание черного чая с лимоном, наватом и свежей мятой' },
+                        'чай ягодный': { price: '2 300 ₸', desc: '1 литр. Насыщенный плодовый настой из лесных и садовых ягод' },
+                        'чай черный': { price: '2 300 ₸', desc: '1 литр. Классический байховый чай с глубоким ароматом и традиционным терпким вкусом' },
+                        'чай с облепихой': { price: '2 300 ₸', desc: '1 литр. Натуральный витаминный настой из ягод облепихи с характерной кислинкой' },
+                        'чай с молоком и тары': { price: '2 300 ₸', desc: '1 литр. Аутентичный напиток с добавлением молока и обжаренного зерна тары' },
+                        'чай с душицей': { price: '2 300 ₸', desc: '1 литр. Ароматный травяной сбор с мягким вкусом и успокаивающим эффектом' },
+                        'чай марроканский': { price: '2 300 ₸', desc: '1 литр. Традиционный восточный микс с мятой, специями и цитрусовыми нотами' },
+                        'чай имбирный': { price: '2 300 ₸', desc: '1 литр. Согревающий напиток на основе свежего корня имбиря с легкой остротой' },
+                        'чай анган': { price: '2 300 ₸', desc: '1 литр. Уникальный авторский сбор с гармоничным цветочным ароматом' },
+                        
+                        // Other Drinks
+                        'боржоми': { price: '1 450 ₸', desc: '0.5 л. Минеральная грузинская вода' },
+                        'cocacola 0.25l': { price: '890 ₸', desc: '0.25 л' },
+                        'tassay': { price: '890 ₸', desc: 'Вода' },
+                        'cocacola 1l': { price: '1 290 ₸', desc: '1 л' },
+                        'соки': { price: '1 500 ₸', desc: 'соки разного вкуса' }
+                    };
+                }
 
+                function showModal(title, details) {
+                    const modal = document.getElementById('descriptionModal');
+                    document.getElementById('modalTitle').textContent = title;
+                    document.getElementById('modalPrice').textContent = details.price || 'Цена по запросу';
+                    document.getElementById('modalDescription').innerHTML = details.desc ? details.desc.replace(/\n/g, '<br>') : '';
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
 
-        // Helper function to convert category name to display name
-        function formatCategoryName(category) {
-            const names = {
-                'breakfasts': 'Breakfasts',
-                'salads': 'Salads',
-                'soups': 'Soups',
-                'meat dishes': 'Meat Dishes',
-                'fish': 'Fish',
-                'pastas': 'Pastas',
-                'burgers': 'Burgers',
-                'bruschettas': 'Bruschettas',
-                'appetizers': 'Appetizers',
-                'for groups': 'For Groups',
-                'pizza': 'Pizza',
-                'desserts': 'Desserts',
-                'drinks': 'Drinks'
-            };
-            return names[category] || category;
-        }
-
-         // Function to get image path for a dish
-        function getImagePath(category, item) {
-            let fileName = item;
-
-            const categoryFolderMap = {
-                'breakfasts': 'breakfasts',
-                'salads': 'salads',
-                'soups': 'soups',
-                'meat dishes': 'meat dishes',
-                'fish': 'fish',
-                'pastas': 'pastas',
-                'burgers': 'burgers',
-                'bruschettas': 'bruschettas',
-                'appetizers': 'appetizers',
-                'for groups': 'for groups',
-                'pizza': 'pizza',
-                'desserts': 'desserts'
-            };
-
-            const folder = categoryFolderMap[category];
-            if (!folder) return null;
-
-            return `menu_images/${folder}/${fileName}.jpg`;
-        }
-
-        // Helper to normalize item names for lookup
-        function normalizeName(name) {
-            return name.toLowerCase()
-                .replace(/\s+/g, ' ')
-                .replace(/\b0[.,]\d+\b/g, m => m.replace(',', '.'))
-                .replace(/\b\d+[,.]\d+\s*л\b/g, '')
-                .replace(/\s*\([^)]*\)/g, '')
-                .replace(/,|\./g, '')
-                .replace(/\s+г\b/g, '')
-                .trim();
-        }
-
-        // Price and description data extracted from info.txt
-        function getItemDetails() {
-            return {
-                // Breakfasts
-                'каша рисовая': { price: '1 700 тг', desc: 'Рис, молоко, сливочное масло, фрукты' },
-                'каша овсяная': { price: '1 600 тг', desc: 'Геркулес, молоко, сливочное масло, изюм, грецкий орех' },
-                'деревенский завтрак': { price: '2 900 тг', desc: 'Яйца, сосиски говяжьи, листья салата, картофельные дольки, тост-хлеб' },
-                'вареники домашние с картофелем': { price: '1 500 тг', desc: 'Домашние вареники с картофельной начинкой' },
-                'болгарский перец запечённый в ореховом соусе': { price: '2 700 тг', desc: 'Запеченный болгарский перец в稠稠 ореховом соусе' },
-                'омлет флоренция': { price: '3 100 тг', desc: 'Яйца, листья салата, помидоры, шампиньоны, сливки, сыр чеддер' },
-                'омлет греческий': { price: '3 600 тг', desc: 'Яйца, шпинат, творог, шампиньоны, помидоры, сливки' },
-                'турецкий завтрак': { price: '2 600 тг', desc: 'Яйцо пашот, нут, листья салата, черри, хлеб чиабатта' },
-                'сырники': { price: '2 400 тг', desc: 'Сырники с ягодным джемом' },
-
-                // Salads
-                'салат цезарь с курицей и чиабаттой': { price: '2 900 тг', desc: 'Листья салата, черри, перепелиные яйца, сыр пармезан, куриное филе' },
-                'салат с хрустящими баклажанами': { price: '3 200 тг', desc: 'Лист салата, баклажан, помидор, творожный сыр' },
-                'салат ривьера': { price: '3 600 тг', desc: 'Теплые креветки, руккола, черри в цитрусовой заправке' },
-                'салат зеленая рапсодия': { price: '2 900 тг', desc: 'Листья салата, черри, куриное филе, грибы, кисло-сладкий соус' },
-                'салат греческий с нежным сыром': { price: '2 900 тг', desc: 'Листья салата, оливки, черри, болгарский перец, огурцы, сыр' },
-                'салат авокадо verde': { price: '3 400 тг', desc: 'Листья салата, черри, авокадо, яблоко' },
-                'микс-салат с утиной грудкой': { price: '3 100 тг', desc: 'Листья салата, черри, апельсин, утка' },
-
-                // Soups
-                'шакшука': { price: '3 100 тг', desc: 'Яйца, помидоры, перец болгарский, зелень' },
-                'том ям': { price: '3 500 тг', desc: 'Креветки, морепродукты, рис' },
-                'суп чечевичный': { price: '1 600 тг', desc: 'Классический чечевичный суп' },
-                'суп с фрикадельками': { price: '2 300 тг', desc: 'Лапша домашняя с фрикадельками' },
-                'рамен': { price: '3 500 тг', desc: 'Куриное филе, лапша, водоросли вакаме, яйцо' },
-                'пельмени по домашнему': { price: '2 500 тг', desc: 'Домашние пельмени' },
-                'мисо суп': { price: '3 600 тг', desc: 'Сёмга, тофу, водоросли, грибы шиитаке' },
-                'крем-суп из брокколи': { price: '2 700 тг', desc: 'Брокколи, морковь, сыр чеддер, молоко' },
-                'бульон из перепелки с овощами': { price: '3 500 тг', desc: 'Бульон из перепелки с овощами' },
-
-                // Meat Dishes
-                'тай куырдак': { price: '4 400 тг', desc: 'Конина, картофель, лук' },
-                'стейк тибон': { price: '3 100 тг/100г', desc: 'Цена за 100 грамм' },
-                'стейк рибай': { price: '2 800 тг/100г', desc: 'Цена за 100 грамм' },
-                'стейк медальон': { price: '6 900 тг', desc: '250.gr. стейк из мраморной говядины' },
-                'семечки из баранины': { price: '3 400 тг', desc: 'Запеченные семечки из баранины' },
-                'сахарная кость': { price: '3 100 тг', desc: 'Говяжья сахарная кость' },
-                'перепелка запеченная с киноа': { price: '4 700 тг', desc: 'Запеченная перепелка с киноа' },
-                'корейка ягненка': { price: '4 300 тг', desc: 'Корейка ягненка с запеченными овощами' },
-                'картошка по домашнему': { price: '3 400 тг', desc: 'Картошка по домашнему с курицей и грибами' },
-                'бифштекс': { price: '4 200 тг', desc: 'Фарш из мраморной говядины, грибы, сливки, пюре' },
-                'бефстроганов куриный': { price: '3 000 тг', desc: 'Куриное филе, шампиньоны, сливки, солёные огурцы, картофельное пюре' },
-                'бефстроганов говяжий': { price: '3 200 тг', desc: 'Говядина, шампиньоны, сливки, картофельное пюре' },
-
-                // Fish
-                'дорадо': { price: '2 200 тг/100г', desc: 'Цена за 100 грамм; рыба, зелень' },
-                'форель с овощами гриль': { price: '1 900 тг/100г', desc: 'Цена за 100 грамм; рыба, овощи, соус сливочный' },
-                'семга запеченная': { price: '6 900 тг', desc: 'Стейк из сёмги, спаржа, сливки, икра' },
-
-                // Pastas
-                'японский удон': { price: '3 000 тг', desc: 'Лапша, куриное филе, микс овощей, соус' },
-                'фетучини альфредо': { price: '3 500 тг', desc: 'Паста, куриное филе, грибы, черри, сливки' },
-                'спагетти шпинатные в сливочном соусе': { price: '3 600 тг', desc: 'Спагетти шпинатные, куриное филе, сливки' },
-                'спагетти с морепродуктами': { price: '4 700 тг', desc: 'Спагетти, креветки, лосось, сливки' },
-                'спагетти карбонара': { price: '3 600 тг', desc: 'Спагетти, копчёная говядина, помидоры, сливки' },
-                'спагетти болоньезе': { price: '3 600 тг', desc: 'Спагетти, фарш говяжий' },
-
-                // Burgers
-                'бургер куринный': { price: '3 500 тг', desc: 'Куриное филе, с картофелем фри' },
-                'бургер говяжий': { price: '3 800 тг', desc: 'Из мраморной говядины, с картофелем фри' },
-
-                // Bruschettas
-                'брускетта с нежным паштетом и запеченными помидорами': { price: '2 600 тг', desc: 'Брускетта с нежным паштетом и запеченными помидорами' },
-                'брускетта с лососем и яйцом пашот': { price: '3 300 тг', desc: 'Брускетта с лососем и яйцом пашот' },
-                'брускетта с креветками': { price: '3 300 тг', desc: 'Брускетта с креветками' },
-
-                // Appetizers
-                'сырные палочки': { price: '2 500 тг', desc: 'Жареные сырные палочки' },
-                'нагетсы': { price: '1 050 тг', desc: 'Куриные наггетсы' },
-                'мини чебуреки': { price: '2 100 тг', desc: 'Мини-чебуреки' },
-                'креветки жаренные': { price: '4 400 тг', desc: 'Жареные креветки' },
-
-                // For Groups
-                'микс колбасок гриль': { price: '4 300 тг', desc: 'Колбаски, квашеная капуста, картофельные дольки' },
-                'малый сет': { price: '5 200 тг', desc: 'Крылышки, мини-чебуреки, луковые кольца, лаваш-чипсы, гарлики' },
-                'бешпармак': { price: '33 600 тг', desc: 'На заказ, 6 персон; конина, қазы, картофель, тұздық' },
-                'рыбный сет': { price: '39 000 тг', desc: 'На 4-5 персон; форель, дорадо, семга, скумбрия, судак, рис' },
-                'мясное ассорти': { price: '35 000 тг', desc: 'Стейк рибай, стейк ти-бон, колбаски гриль, медальон, филе утки, цыпленок, сахарная кость, картофельные дольки, овощи гриль' },
-                'сет ассорти': { price: '5 500 тг', desc: 'Колбаски, наггетсы, крылышки, капуста, картофельные дольки' },
-
-                // Pizza
-                'хачапури по-мегрельски': { price: '3 400 тг', desc: 'Хачапури по-мегрельски' },
-                'хачапури по-аджарски': { price: '3 400 тг', desc: 'Хачапури по-аджарски' },
-                'пицца пепперони': { price: '3 800 тг', desc: 'Пицца с пепперони' },
-                'пицца маргарита': { price: '3 100 тг', desc: 'Классическая пицца маргарита' },
-                'пицца куриная': { price: '3 500 тг', desc: 'Пицца с курицей' },
-                'пицца болоньезе': { price: '4 600 тг', desc: 'Пицца с болоньезе соусом' },
-                'пицца 4 сезона': { price: '4 100 тг', desc: 'Пицца 4 сезона' },
-
-                // Desserts
-                'ягодный крем-смузи': { price: '2 200 тг', desc: 'Ягодный крем-смузи' },
-                'штрудель': { price: '2 200 тг', desc: 'Яблочный штрудель' },
-                'шоколадный уют': { price: '2 600 тг', desc: 'Шоколадный десерт' },
-
-                // Drinks - Tea & Coffee
-                'эспрессо': { price: '1 090 тг', desc: '70 мл' },
-                'чай ягодный': { price: '2 300 тг', desc: '1 литр' },
-                'чай черный': { price: '2 300 тг', desc: '1 литр' },
-                'чай ташкентский': { price: '2 300 тг', desc: '1 литр' },
-                'чай с облепихой': { price: '2 300 тг', desc: '1 литр' },
-                'чай с молоком и тары': { price: '2 300 тг', desc: '1 литр' },
-                'чай с душицей': { price: '2 300 тг', desc: '1 литр' },
-                'чай марроканский': { price: '2 300 тг', desc: '1 литр' },
-                'чай имбирный': { price: '2 300 тг', desc: '1 литр' },
-                'чай анган': { price: '2 300 тг', desc: '1 литр' },
-                'каппучино': { price: '1 400 тг', desc: '400 мл' },
-                'американо': { price: '1 090 – 1 300 тг', desc: '300 мл / 400 мл' },
-                'latte': { price: '1 190 тг', desc: '250 мл' },
-                'ice latte': { price: null, desc: '' },
-
-                // Non-alcoholic drinks
-                'соки': { price: null, desc: '' },
-                'tassay': { price: null, desc: '' },
-                'cocacola 1l': { price: '1 290 тг', desc: 'Объем не указан' },
-                'cocacola 0.25l': { price: '890 тг', desc: '0.25 л' },
-                'боржоми': { price: '1 450 тг', desc: '0.5 л' },
-                'морс из смородины': { price: '2 200 тг', desc: '1 литр' },
-                'морс из клюквы': { price: '2 200 тг', desc: '1 литр' },
-                'кола 0.25 л': { price: '890 тг', desc: '' },
-                'кола': { price: '1 290 тг', desc: 'Объем не указан' },
-                'вода без газа 0.5 л': { price: '890 тг', desc: '' },
-                'вода с газом 0.5 л': { price: '890 тг', desc: '' },
-                'rich 0.2 л': { price: '1 500 тг', desc: '' },
-                'san pellegrino tonic 0.33 л': { price: '2 100 тг', desc: '' },
-
-                // Alcoholic Drinks - Wine
-                'tavernello vino bianco d\'italia': { price: '3 000 тг', desc: '150 мл, белое, полусладкое, Италия' },
-                'tavernello vino rosso d\'italia amabil': { price: '3 000 тг', desc: '150 мл, красное, полусладкое, Италия' },
-                'gewurztraminer tradition': { price: '28 000 тг', desc: '0.75 л, белое, полусладкое, Франция' },
-                'la marina cotes de gascogne sauvignon blanc': { price: '14 000 тг', desc: 'Белое, сухое, Франция' },
-                'la marina cotes de gascogne cuvee rouge': { price: '15 000 тг', desc: 'Красное, сухое, Франция' },
-                'chateau andron medoc': { price: '23 000 тг', desc: '0.75 л, красное, сухое, Франция' },
-                'ak arba assa valley almaty': { price: '16 000 тг', desc: 'Белое, сухое, Казахстан' },
-                'lagyl arba assa valley almaty': { price: '14 000 тг', desc: 'Красное, сухое, Казахстан' },
-
-                // Alcoholic Drinks - Cocktails & Spirits
-                'клубничный алиби': { price: '3 000 тг', desc: 'Алкогольный коктейль' },
-                'тихий ирландец': { price: '3 700 тг', desc: 'Алкогольный коктейль' },
-                'pina colada': { price: '3 600 тг', desc: 'Алкогольный коктейль' },
-                'long island': { price: '4 400 тг', desc: 'Алкогольный коктейль' },
-                'mojito alc': { price: '3 600 тг', desc: 'Алкогольный коктейль' },
-                'wyborowa 50 мл': { price: '1 800 тг', desc: 'Водка, 50 мл' },
-                'wyborowa 0.5 л': { price: '15 990 тг', desc: 'Водка, 0.5 л' },
-                'absolut original 50 мл': { price: '1 950 тг', desc: 'Водка, 50 мл' },
-                'absolut original 0.5 л': { price: '18 000 тг', desc: 'Водка, 0.5 л' },
-                'grey goose 50 мл': { price: '3 200 тг', desc: 'Водка, 50 мл' },
-                'grey goose 0.5 л': { price: '29 000 тг', desc: 'Водка, 0.5 л' },
-                'oakheart original 50 мл': { price: '2 200 тг', desc: 'Ром, 50 мл' },
-
-                // Smoothies
-                'berry': { price: '1 800 тг', desc: 'Смузи, 0.35 л' },
-                'банана-малина': { price: '2 100 тг', desc: 'Смузи, 0.35 л' },
-                'citrus': { price: '2 200 тг', desc: 'Цитрусовый смузи, 0.35 л' },
-                'apple orange': { price: '2 400 тг', desc: 'Смузи, 0.35 л' },
-                'aloe fresh': { price: '2 500 тг', desc: 'Смузи, 0.35 л' },
-                'herbal green': { price: '1 800 тг', desc: 'Смузи, 0.35 л' },
-                'avocado almond': { price: '2 800 тг', desc: 'Смузи, 0.35 л' },
-
-                // Lemonades
-                'клубничный': { price: '1 200 / 2 400 тг', desc: '0.35 л / 1 л' },
-                'киви-маракуйя': { price: '1 200 / 2 400 тг', desc: '0.35 л / 1 л' },
-                'манго-маракуйя': { price: '1 200 / 2 400 тг', desc: '0.35 л / 1 л' },
-                'мохито': { price: '1 200 / 2 400 тг', desc: '0.35 л / 1 л' },
-                'тропический': { price: '1 200 / 2 400 тг', desc: '0.35 л / 1 л' },
-                'тихий ирландец': { price: '1 200 / 2 400 тг', desc: '0.35 л / 1 л' },
-                'цитрусовый': { price: '1 200 / 2 400 тг', desc: '0.35 л / 1 л' }
-            };
-        }
-
-        function showModal(title, details) {
-            const modal = document.getElementById('descriptionModal');
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalPrice').textContent = details.price || 'Цена по запросу';
-            document.getElementById('modalDescription').innerHTML = details.desc ? details.desc.replace(/\n/g, '<br>') : '';
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Function to create a single menu item element
-        function createMenuItem(category, item) {
-            const div = document.createElement('div');
-            div.className = 'menu-item';
-
-            const img = document.createElement('img');
-            img.className = 'menu-item-image';
-            const imagePath = getImagePath(category, item);
-
-            if (imagePath) {
-                img.src = imagePath;
-                img.alt = item;
-                img.onerror = function() {
-                    this.style.display = 'none';
-                };
-            }
-            div.appendChild(img);
-
-            const itemDetails = getItemDetails();
-            const normalizedKey = normalizeName(item);
-            const details = itemDetails[normalizedKey];
-
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'menu-item-name';
-            nameDiv.textContent = item;
-            div.appendChild(nameDiv);
-
-            if (details && details.price) {
-                const priceDiv = document.createElement('div');
-                priceDiv.className = 'menu-item-price';
-                priceDiv.textContent = details.price;
-                div.appendChild(priceDiv);
-            }
-
-            if (details) {
-                div.addEventListener('click', function() {
-                    showModal(item, details);
-                });
-            } else {
-                div.style.cursor = 'default';
-            }
-
-            return div;
-        }
-
-        // Function to create category section with unique ID
-        function createCategorySection(category, items) {
-            const section = document.createElement('section');
-            section.className = 'category';
-            const categoryId = category.replace(/\s+/g, '-').toLowerCase();
-            section.id = `category-${categoryId}`;
-
-            const title = document.createElement('h2');
-            title.className = 'category-title';
-            const dashedKey = category.replace(/\s+/g, '-');
-            title.innerHTML = `<span class="category-header" data-category-key="${dashedKey}">${formatCategoryName(category)}</span>`;
-            section.appendChild(title);
-
-            const grid = document.createElement('div');
-            grid.className = 'menu-grid';
-
-            items.forEach(item => {
-                const menuItem = createMenuItem(category, item);
-                grid.appendChild(menuItem);
-            });
-
-            section.appendChild(grid);
-            return section;
-        }
-
-        const COCKTAILS = ['клубничный алиби', 'pina colada', 'long island'];
-
-        function makeAlcoholicItem(item) {
-            const div = document.createElement('div');
-            div.className = 'menu-item';
-            const img = document.createElement('img');
-            img.className = 'menu-item-image';
-            img.src = `menu_images/drinks/alcoholic drinks/${item}.jpg`;
-            img.alt = item;
-            img.onerror = function() { this.style.display = 'none'; };
-            div.appendChild(img);
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'menu-item-name';
-            nameDiv.textContent = item;
-            div.appendChild(nameDiv);
-            const details = getItemDetails()[normalizeName(item)];
-            if (details && details.price) {
-                const priceDiv = document.createElement('div');
-                priceDiv.className = 'menu-item-price';
-                priceDiv.textContent = details.price;
-                div.appendChild(priceDiv);
-            }
-            if (details) div.addEventListener('click', function() { showModal(item, details); });
-            else div.style.cursor = 'default';
-            return div;
-        }
-
-        // Render alcoholic drinks as a separate category with images
-        function renderAlcoholicDrinksSection(menuData) {
-            const items = menuData.drinks['alcoholic drinks'];
-            const section = document.createElement('section');
-            section.className = 'category';
-            section.id = 'category-alcoholic-drinks';
-
-            const title = document.createElement('h2');
-            title.className = 'category-title';
-            title.innerHTML = `<span class="category-header" data-category-key="alcoholic-drinks">Alcoholic Drinks</span>`;
-            section.appendChild(title);
-
-            // Alcoholic Cocktails subgroup
-            const cocktailDiv = document.createElement('div');
-            cocktailDiv.className = 'drink-subcategory';
-            const cocktailTitle = document.createElement('h3');
-            cocktailTitle.className = 'drink-subcategory-title';
-            cocktailTitle.textContent = 'Alcoholic Cocktails';
-            cocktailDiv.appendChild(cocktailTitle);
-            const cocktailGrid = document.createElement('div');
-            cocktailGrid.className = 'menu-grid';
-            COCKTAILS.forEach(item => cocktailGrid.appendChild(makeAlcoholicItem(item)));
-            cocktailDiv.appendChild(cocktailGrid);
-            section.appendChild(cocktailDiv);
-
-            // Rest of alcoholic drinks
-            const restDiv = document.createElement('div');
-            restDiv.className = 'drink-subcategory';
-            const restGrid = document.createElement('div');
-            restGrid.className = 'menu-grid';
-            items.filter(item => !COCKTAILS.includes(item)).forEach(item => restGrid.appendChild(makeAlcoholicItem(item)));
-            restDiv.appendChild(restGrid);
-            section.appendChild(restDiv);
-
-            return section;
-        }
-
-        // Render drinks subcategories with visual separation (no alcoholic drinks)
-        function renderDrinksSection(menuData) {
-            const section = document.createElement('section');
-            section.className = 'category';
-            section.id = 'category-drinks';
-
-            const title = document.createElement('h2');
-            title.className = 'category-title';
-            title.innerHTML = `<span class="category-header">Drinks</span>`;
-            section.appendChild(title);
-
-             const drinkSubCategories = [
-                { key: 'tea_coffee', label: 'Tea & Coffee' },
-                { key: 'non-alcoholic drinks', label: 'Non-Alcoholic Drinks' },
-                { key: 'smoothies', label: 'Smoothies & Juices' },
-                { key: 'lemonades', label: 'Lemonades' }
-            ];
-
-            drinkSubCategories.forEach(subCategory => {
-                const subCatData = menuData.drinks[subCategory.key];
-                if (!subCatData || subCatData.length === 0) return;
-
-                const subCatDiv = document.createElement('div');
-                subCatDiv.className = 'drink-subcategory';
-
-                const subCatTitle = document.createElement('h3');
-                subCatTitle.className = 'drink-subcategory-title';
-                subCatTitle.setAttribute('data-drink-key', subCategory.key);
-                subCatTitle.textContent = subCategory.label;
-                subCatDiv.appendChild(subCatTitle);
-
-                const subGrid = document.createElement('div');
-                subGrid.className = 'menu-grid';
-
-                subCatData.forEach(item => {
+                function createMenuItem(category, item) {
                     const div = document.createElement('div');
                     div.className = 'menu-item';
-
                     const img = document.createElement('img');
                     img.className = 'menu-item-image';
-                    img.src = `menu_images/drinks/${subCategory.key}/${item}.jpg`;
-                    img.alt = item;
-                    img.onerror = function() {
-                        this.style.display = 'none';
-                    };
+                    const imagePath = getImagePath(category, item);
+                    if (imagePath) {
+                        img.src = imagePath;
+                        img.alt = item;
+                        img.onerror = function() { this.style.display = 'none'; };
+                    }
                     div.appendChild(img);
-
+                    const itemDetails = getItemDetails();
+                    const normalizedKey = normalizeName(item);
+                    const details = itemDetails[normalizedKey];
                     const nameDiv = document.createElement('div');
                     nameDiv.className = 'menu-item-name';
                     nameDiv.textContent = item;
                     div.appendChild(nameDiv);
-
-                    // Add price
-                    const itemDetails = getItemDetails();
-                    const normalizedKey = normalizeName(item);
-                    const details = itemDetails[normalizedKey];
                     if (details && details.price) {
                         const priceDiv = document.createElement('div');
                         priceDiv.className = 'menu-item-price';
                         priceDiv.textContent = details.price;
                         div.appendChild(priceDiv);
                     }
-
-                    // Add click handler for description
                     if (details) {
-                        div.addEventListener('click', function() {
-                            showModal(item, details);
-                        });
+                        div.addEventListener('click', function() { showModal(item, details); });
                     } else {
                         div.style.cursor = 'default';
                     }
+                    return div;
+                }
 
-                    subGrid.appendChild(div);
-                });
+                function createCategorySection(category, items) {
+                    const section = document.createElement('section');
+                    section.className = 'category';
+                    const categoryId = category.replace(/\s+/g, '-').toLowerCase();
+                    section.id = `category-${categoryId}`;
+                    const title = document.createElement('h2');
+                    title.className = 'category-title';
+                    const dashedKey = category.replace(/\s+/g, '-');
+                    title.innerHTML = `<span class="category-header" data-category-key="${dashedKey}">${formatCategoryName(category)}</span>`;
+                    section.appendChild(title);
+                    const grid = document.createElement('div');
+                    grid.className = 'menu-grid';
+                    items.forEach(item => {
+                        const menuItem = createMenuItem(category, item);
+                        grid.appendChild(menuItem);
+                    });
+                    section.appendChild(grid);
+                    return section;
+                }
 
-                subCatDiv.appendChild(subGrid);
-                section.appendChild(subCatDiv);
-            });
+                const COCKTAILS = ['клубничный алиби', 'pina colada', 'long island'];
 
-            return section;
-        }
+                // === ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ АЛКОГОЛЬНЫХ НАПИТКОВ ===
+                function makeAlcoholicItem(item) {
+                    const div = document.createElement('div');
+                    div.className = 'menu-item';
+                    const img = document.createElement('img');
+                    img.className = 'menu-item-image';
+                    
+                    // Mapping item names to English image filenames
+                    const alcoholImgMap = {
+                        'клубничный алиби': 'strawberry alibi'
+                    };
+                    const fileName = alcoholImgMap[item] || item;
+                    img.src = `menu_images/drinks/alcoholic-drinks/${fileName}.jpg`;
+                    img.alt = item;
+                    img.onerror = function() { this.style.display = 'none'; };
+                    div.appendChild(img);
+                    
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'menu-item-name';
+                    nameDiv.textContent = item;
+                    div.appendChild(nameDiv);
+                    
+                    // Поиск деталей с улучшенной нормализацией
+                    const details = getItemDetails()[normalizeName(item)];
+                    if (details && details.price) {
+                        const priceDiv = document.createElement('div');
+                        priceDiv.className = 'menu-item-price';
+                        priceDiv.textContent = details.price;
+                        div.appendChild(priceDiv);
+                    }
+                    if (details) {
+                        div.addEventListener('click', function() { showModal(item, details); });
+                    } else {
+                        div.style.cursor = 'default';
+                    }
+                    return div;
+                }
 
-         // Initialize category filter
-        function initCategoryFilter() {
-            const navButtons = document.querySelectorAll('.category-nav-item');
-            const sections = document.querySelectorAll('.category');
+                const WINES = ['tavernello', 'tavernello white', 'marina', 'cave de turckheim', 'andron', 'ak arba assa valley almaty', 'lagyl arba assa valley'];
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const category = this.getAttribute('data-category');
+                function renderAlcoholicDrinksSection(menuData) {
+                    const items = menuData.drinks['alcoholic-drinks'];
+                    const section = document.createElement('section');
+                    section.className = 'category';
+                    section.id = 'category-alcoholic-drinks';
+                    const title = document.createElement('h2');
+                    title.className = 'category-title';
+                    title.innerHTML = `<span class="category-header" data-category-key="alcoholic-drinks">Alcoholic Drinks</span>`;
+                    section.appendChild(title);
 
-                    // Update active button
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
+                    // Cocktails
+                    const cocktailDiv = document.createElement('div');
+                    cocktailDiv.className = 'drink-subcategory';
+                    const cocktailTitle = document.createElement('h3');
+                    cocktailTitle.className = 'drink-subcategory-title';
+                    cocktailTitle.textContent = 'Cocktails';
+                    cocktailDiv.appendChild(cocktailTitle);
+                    const cocktailGrid = document.createElement('div');
+                    cocktailGrid.className = 'menu-grid';
+                    COCKTAILS.forEach(item => cocktailGrid.appendChild(makeAlcoholicItem(item)));
+                    cocktailDiv.appendChild(cocktailGrid);
+                    section.appendChild(cocktailDiv);
 
-                    // Filter sections
-                    sections.forEach(section => {
-                        if (category === 'all') {
-                            section.style.display = 'block';
-                        } else {
-                            const sectionId = section.id.replace('category-', '');
-                            if (sectionId === category) {
-                                section.style.display = 'block';
-                            } else {
-                                section.style.display = 'none';
+                    // Spirits & Beer
+                    const spiritsDiv = document.createElement('div');
+                    spiritsDiv.className = 'drink-subcategory';
+                    const spiritsTitle = document.createElement('h3');
+                    spiritsTitle.className = 'drink-subcategory-title';
+                    spiritsTitle.textContent = 'Spirits & Beer';
+                    spiritsDiv.appendChild(spiritsTitle);
+                    const spiritsGrid = document.createElement('div');
+                    spiritsGrid.className = 'menu-grid';
+                    items.filter(item => !COCKTAILS.includes(item) && !WINES.includes(item)).forEach(item => spiritsGrid.appendChild(makeAlcoholicItem(item)));
+                    spiritsDiv.appendChild(spiritsGrid);
+                    section.appendChild(spiritsDiv);
+
+                    // Wines
+                    const winesDiv = document.createElement('div');
+                    winesDiv.className = 'drink-subcategory';
+                    const winesTitle = document.createElement('h3');
+                    winesTitle.className = 'drink-subcategory-title';
+                    winesTitle.textContent = 'Wines';
+                    winesDiv.appendChild(winesTitle);
+                    const winesGrid = document.createElement('div');
+                    winesGrid.className = 'menu-grid';
+                    items.filter(item => WINES.includes(item)).forEach(item => winesGrid.appendChild(makeAlcoholicItem(item)));
+                    winesDiv.appendChild(winesGrid);
+                    section.appendChild(winesDiv);
+
+                    return section;
+                }
+
+                function renderDrinksSection(menuData) {
+                    const section = document.createElement('section');
+                    section.className = 'category';
+                    section.id = 'category-drinks';
+                    const title = document.createElement('h2');
+                    title.className = 'category-title';
+                    title.innerHTML = `<span class="category-header">Drinks</span>`;
+                    section.appendChild(title);
+                    const drinkSubCategories = [
+                        { key: 'coffee', label: 'Coffee' },
+                        { key: 'tea', label: 'Tea' },
+                        { key: 'non-alcoholic-drinks', label: 'Non-Alcoholic Drinks' },
+                        { key: 'smoothies', label: 'Smoothies & Juices' },
+                        { key: 'lemonades', label: 'Lemonades' }
+                    ];
+                    drinkSubCategories.forEach(subCategory => {
+                        const subCatData = menuData.drinks[subCategory.key];
+                        if (!subCatData || subCatData.length === 0) return;
+                        const subCatDiv = document.createElement('div');
+                        subCatDiv.className = 'drink-subcategory';
+                        const subCatTitle = document.createElement('h3');
+                        subCatTitle.className = 'drink-subcategory-title';
+                        subCatTitle.setAttribute('data-drink-key', subCategory.key);
+                        subCatTitle.textContent = subCategory.label;
+                        subCatDiv.appendChild(subCatTitle);
+                        const subGrid = document.createElement('div');
+                        subGrid.className = 'menu-grid';
+                        subCatData.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'menu-item';
+                            const img = document.createElement('img');
+                            img.className = 'menu-item-image';
+                            const drinkImgMap = {
+                                'боржоми': 'borjomi', 'соки': 'juices', 'банана-малина': 'banana raspberry',
+                                'американо': 'americano', 'каппучино': 'cappuccino', 'эспрессо': 'espresso',
+                                'чай анган': 'angang tea', 'чай имбирный': 'ginger tea',
+                                'чай марроканский': 'moroccan tea', 'чай с душицей': 'oregano tea',
+                                'чай с молоком и тары': 'milk tea', 'чай с облепихой': 'sea buckthorn tea',
+                                'чай ташкентский': 'tashkent tea', 'чай черный': 'black tea',
+                                'чай ягодный': 'berry tea',
+                                'клубничный': 'strawberry lemonade', 'киви-маракуйя': 'kiwi passion fruit',
+                                'манго-маракуйя': 'mango passion fruit', 'мохито': 'mojito lemonade',
+                                'тихий ирландец': 'quiet irishman', 'тропический': 'tropical lemonade',
+                                'цитрусовый': 'citrus lemonade',
+                                'apple orange': 'apple-orange', 'aloe fresh': 'aloe-fresh'
+                            };
+                            const drinkFileName = drinkImgMap[item] || item;
+                            const imgFolder = (subCategory.key === 'coffee' || subCategory.key === 'tea') ? 'tea_coffee' : subCategory.key;
+                            img.src = `menu_images/drinks/${imgFolder}/${drinkFileName}.jpg`;
+                            img.alt = item;
+                            img.onerror = function() { this.style.display = 'none'; };
+                            div.appendChild(img);
+                            const nameDiv = document.createElement('div');
+                            nameDiv.className = 'menu-item-name';
+                            nameDiv.textContent = item;
+                            div.appendChild(nameDiv);
+                            const itemDetails = getItemDetails();
+                            const normalizedKey = normalizeName(item);
+                            const details = itemDetails[normalizedKey];
+                            if (details && details.price) {
+                                const priceDiv = document.createElement('div');
+                                priceDiv.className = 'menu-item-price';
+                                priceDiv.textContent = details.price;
+                                div.appendChild(priceDiv);
                             }
-                        }
+                            if (details) {
+                                div.addEventListener('click', function() { showModal(item, details); });
+                            } else {
+                                div.style.cursor = 'default';
+                            }
+                            subGrid.appendChild(div);
+                        });
+                        subCatDiv.appendChild(subGrid);
+                        section.appendChild(subCatDiv);
                     });
-
-                    // Scroll to top of menu container smoothly
-                    setTimeout(() => {
-                        const container = document.getElementById('menu-container');
-                        if (container) {
-                            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    }, 100);
-                });
-            });
-        }
-
-        // Build the menu
-        function buildMenu() {
-            const container = document.getElementById('menu-container');
-
-            // Menu data - items match image filenames
-            const menuData = {
-                'breakfasts': [
-                    'каша рисовая',
-                    'каша овсяная',
-                    'деревенский завтрак',
-                    'Вареники домашние с картофелем',
-                    'Болгарский перец запечённый в ореховом соусе',
-                    'омлет флоренция',
-                    'омлет греческий',
-                    'турецкий завтрак',
-                    'сырники',
-                    'Шакшука'
-                ],
-                'salads': [
-                    'салат цезарь с курицей и чиабаттой',
-                    'Салат с хрустящими баклажанами',
-                    'салат ривьера',
-                    'салат зеленая рапсодия',
-                    'салат греческий с нежным сыром',
-                    'салат авокадо verde',
-                    'Микс-салат с утиной грудкой'
-                ],
-                'soups': [
-                    'том ям',
-                    'суп чечевичный',
-                    'суп с фрикадельками',
-                    'рамен',
-                    'пельмени по домашнему',
-                    'мисо суп',
-                    'крем-суп из брокколи',
-                    'Бульон из перепелки с овощами'
-                ],
-                'meat dishes': [
-                    'тай куырдак',
-                    'стейк рибай',
-                    'стейк тибон',
-                    'стейк медальон',
-                    'семечки из баранины',
-                    'сахарная кость',
-                    'Перепелка запеченная с киноа',
-                    'корейка ягненка',
-                    'картошка по домашнему',
-                    'бифштекс',
-                    'Бефстроганов куриный',
-                    'Бефстроганов говяжий'
-                ],
-                'fish': [
-                    'дорадо',
-                    'Форель с овощами гриль',
-                    'семга запеченная'
-                ],
-                'pastas': [
-                    'Японский удон',
-                    'фетучини альфредо',
-                    'Спагетти шпинатные в сливочном соусе',
-                    'Спагетти с морепродуктами',
-                    'Спагетти Карбонара',
-                    'спагетти болоньезе'
-                ],
-                'burgers': [
-                    'бургер куринный',
-                    'бургер говяжий'
-                ],
-                'bruschettas': [
-                    'Брускетта с нежным паштетом и запеченными помидорами',
-                    'Брускетта с лососем и яйцом пашот',
-                    'Брускетта с креветками'
-                ],
-                'appetizers': [
-                    'сырные палочки',
-                    'нагетсы',
-                    'мини чебуреки',
-                    'креветки жаренные'
-                ],
-                'for groups': [
-                    'микс колбасок гриль',
-                    'малый сет',
-                    'Бешпармак',
-                    'Рыбный сет',
-                    'Мясное ассорти',
-                    'сет ассорти'
-                ],
-                'pizza': [
-                    'хачапури по-мегрельски',
-                    'хачапури по-аджарски',
-                    'пицца пепперони',
-                    'пицца маргарита',
-                    'пицца куриная',
-                    'пицца болоньезе',
-                    'пицца 4 сезона'
-                ],
-                'desserts': [
-                    'Ягодный крем-смузи',
-                    'штрудель',
-                    'шоколадный уют'
-                ],
-                'drinks': {
-                    'tea_coffee': [
-                        'Эспрессо',
-                        'чай ягодный',
-                        'чай черный',
-                        'чай ташкентский',
-                        'чай с облепихой',
-                        'чай с молоком и тары',
-                        'чай с душицей',
-                        'чай марроканский',
-                        'чай имбирный',
-                        'чай анган',
-                        'Каппучино',
-                        'Американо',
-                        'latte',
-                        'ice latte'
-                    ],
-                    'non-alcoholic drinks': [
-                        'Соки',
-                        'Tassay',
-                        'Cocacola 1L',
-                        'Cocacola 0.25L',
-                        'borjomi'
-                    ],
-                    'alcoholic drinks': [
-                        'клубничный алиби',
-                        'Ак Арба',
-                        'Wyborowa',
-                        'Tavernello',
-                        'Tavernello white',
-                        'Sanpellegrino',
-                        'pina colada',
-                        'Olmeca tekila',
-                        'Oakheart',
-                        'Marina',
-                        'long island',
-                        'Jameson',
-                        'Heineken',
-                        'Grey goose',
-                        'Cave de Turckheim',
-                        'Beefeater',
-                        'Ararat',
-                        'Andron',
-                        'AK ARBA ASSA VALLEY ALMATY',
-                        'Absolute vodka'
-                    ],
-                    'smoothies': [
-                        'банана-малина',
-                        'herbal green',
-                        'berry',
-                        'Apple orange',
-                        'Aloe Fresh'
-                    ],
-                    'lemonades': [
-                        'клубничный',
-                        'киви-маракуйя',
-                        'манго-маракуйя',
-                        'мохито',
-                        'тропический',
-                        'тихий ирландец',
-                        'цитрусовый'
-                    ]
+                    return section;
                 }
-            };
 
-             const allCategories = [
-                 'breakfasts', 'salads', 'soups', 'meat dishes', 'fish',
-                 'pastas', 'burgers', 'bruschettas', 'appetizers',
-                 'for groups', 'pizza', 'desserts'
-             ];
-
-             allCategories.forEach(category => {
-                 const items = menuData[category];
-                 if (items && items.length > 0) {
-                     const section = createCategorySection(category, items);
-                     container.appendChild(section);
-                 }
-             });
-
-             // Render drinks section (no alcoholic drinks)
-             container.appendChild(renderDrinksSection(menuData));
-
-             // Render alcoholic drinks as separate category with images
-             container.appendChild(renderAlcoholicDrinksSection(menuData));
-
-             // Initialize category filter after all sections are in DOM
-             initCategoryFilter();
-        }
-
-        // Navbar scroll effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Mobile menu toggle
-        const navbarToggle = document.getElementById('navbarToggle');
-        const navbarMenu = document.getElementById('navbarMenu');
-
-        if (navbarToggle && navbarMenu) {
-            navbarToggle.addEventListener('click', function() {
-                navbarMenu.classList.toggle('active');
-            });
-
-            // Close mobile menu when clicking a link
-            document.querySelectorAll('.navbar-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    navbarMenu.classList.remove('active');
-                });
-            });
-        }
-
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                function initCategoryFilter() {
+                    const navButtons = document.querySelectorAll('.category-nav-item');
+                    const sections = document.querySelectorAll('.category');
+                    navButtons.forEach(button => {
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const category = this.getAttribute('data-category');
+                            navButtons.forEach(btn => btn.classList.remove('active'));
+                            this.classList.add('active');
+                            sections.forEach(section => {
+                                if (category === 'all') {
+                                    section.style.display = 'block';
+                                } else {
+                                    const sectionId = section.id.replace('category-', '');
+                                    section.style.display = (sectionId === category) ? 'block' : 'none';
+                                }
+                            });
+                            setTimeout(() => {
+                                const container = document.getElementById('menu-container');
+                                if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                        });
                     });
                 }
-            });
-        });
 
-        // Initialize menu on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            buildMenu();
-
-            // ========== TRANSLATIONS ==========
-            const translations = {
-                eng: {
-                    subtitle: "Fresh & Green Dining Experience",
-                drinkCategories: {
-                         'tea_coffee': 'Tea & Coffee',
-                         'non-alcoholic drinks': 'Non-Alcoholic Drinks',
-                         'smoothies': 'Smoothies',
-                         'lemonades': 'Lemonades'
-                     },
-                 categories: {
-                     'breakfasts': 'Breakfasts',
-                     'salads': 'Salads',
-                     'soups': 'Soups',
-                     'meat-dishes': 'Meat Dishes',
-                     'fish': 'Fish',
-                     'pastas': 'Pastas',
-                     'burgers': 'Burgers',
-                     'bruschettas': 'Bruschettas',
-                     'appetizers': 'Appetizers',
-                     'for-groups': 'For Groups',
-                     'pizza': 'Pizza',
-                     'desserts': 'Desserts',
-                     'drinks': 'Drinks',
-                     'alcoholic-drinks': 'Alcoholic Drinks'
-                 },
-                footerText: "All dishes prepared with fresh ingredients",
-                quickLinks: {
-                    home: "Home",
-                    about: "About",
-                    reviews: "Reviews",
-                    menu: "Menu",
-                    contact: "Contact"
+                function buildMenu() {
+                    const container = document.getElementById('menu-container');
+                    const menuData = {
+                        'breakfasts': ['каша рисовая', 'каша овсяная', 'деревенский завтрак', 'вареники домашние с картофелем', 'омлет флоренция', 'омлет греческий', 'турецкий завтрак', 'сырники', 'шакшука'],
+                        'salads': ['салат цезарь с курицей и чиабаттой', 'салат с хрустящими баклажанами', 'салат ривьера', 'салат зеленая рапсодия', 'салат греческий с нежным сыром', 'салат авокадо verde', 'микс-салат с утиной грудкой'],
+                        'soups': ['том ям', 'суп чечевичный', 'суп с фрикадельками', 'рамен', 'пельмени по домашнему', 'мисо суп', 'крем-суп из брокколи', 'бульон из перепелки с овощами'],
+                        'meat dishes': ['тай куырдак', 'стейк рибай', 'стейк тибон', 'стейк медальон', 'сахарная кость', 'перепелка запеченная с киноа', 'корейка ягненка', 'картошка по домашнему', 'бифштекс', 'бефстроганов куриный', 'бефстроганов говяжий'],
+                        'fish': ['дорадо', 'форель с овощами гриль', 'семга запеченная'],
+                        'pastas': ['японский удон', 'фетучини альфредо', 'спагетти шпинатные в сливочном соусе', 'спагетти с морепродуктами', 'спагетти карбонара', 'спагетти болоньезе'],
+                        'burgers': ['бургер куриный', 'бургер говяжий'],
+                        'bruschettas': ['брускетта с нежным паштетом и запеченными помидорами', 'брускетта с лососем и яйцом пашот', 'брускетта с креветками'],
+                        'appetizers': ['сырные палочки', 'нагетсы', 'мини чебуреки', 'креветки жаренные'],
+                        'for groups': ['микс колбасок гриль', 'малый сет', 'бешпармак', 'рыбный сет', 'мясное ассорти', 'сет ассорти'],
+                        'pizza': ['хачапури по-мегрельски', 'хачапури по-аджарски', 'пицца пепперони', 'пицца маргарита', 'пицца куриная', 'пицца болоньезе', 'пицца 4 сезона'],
+                        'desserts': ['ягодный крем-смузи', 'штрудель', 'шоколадный уют'],
+                        'drinks': {
+                            'coffee': ['эспрессо', 'каппучино', 'американо', 'latte', 'ice latte'],
+                            'tea': ['чай черный', 'чай ташкентский', 'чай имбирный', 'чай с облепихой', 'чай с душицей', 'чай марроканский', 'чай ягодный', 'чай с молоком и тары', 'чай анган'],
+                            'non-alcoholic-drinks': ['соки', 'tassay', 'cocacola 1l', 'боржоми', 'cocacola 0.25l', 'san pellegrino'],
+                            'alcoholic-drinks': ['клубничный алиби', 'ak arba assa valley almaty', 'wyborowa', 'tavernello', 'tavernello white', 'pina colada', 'olmeca tekila', 'oakheart', 'marina', 'long island', 'jameson', 'heineken', 'grey goose', 'cave de turckheim', 'beefeater', 'ararat', 'andron', 'lagyl arba assa valley', 'absolut'],
+                            'smoothies': ['банана-малина', 'herbal green', 'berry', 'apple orange', 'aloe fresh'],
+                            'lemonades': ['клубничный', 'киви-маракуйя', 'манго-маракуйя', 'мохито', 'тропический', 'тихий ирландец', 'цитрусовый']
+                        }
+                    };
+                    const allCategories = ['breakfasts', 'salads', 'soups', 'meat dishes', 'fish', 'pastas', 'burgers', 'bruschettas', 'appetizers', 'for groups', 'pizza', 'desserts'];
+                    allCategories.forEach(category => {
+                        const items = menuData[category];
+                        if (items && items.length > 0) {
+                            const section = createCategorySection(category, items);
+                            container.appendChild(section);
+                        }
+                    });
+                    container.appendChild(renderDrinksSection(menuData));
+                    container.appendChild(renderAlcoholicDrinksSection(menuData));
+                    initCategoryFilter();
                 }
-            },
-            rus: {
-                subtitle: "Свежая и Зеленая Гастрономия",
-                all: "Все",
-                    drinkCategories: {
-                         'tea_coffee': 'Чай и Кофе',
-                         'non-alcoholic drinks': 'Безалкогольные Напитки',
-                         'smoothies': 'Смузи',
-                         'lemonades': 'Лемонады'
-                     },
-                 categories: {
-                     'breakfasts': 'Завтраки',
-                     'salads': 'Салаты',
-                     'soups': 'Супы',
-                     'meat-dishes': 'Мясные блюда',
-                     'fish': 'Рыба',
-                     'pastas': 'Паста',
-                     'burgers': 'Бургеры',
-                     'bruschettas': 'Брускетты',
-                     'appetizers': 'Закуски',
-                     'for-groups': 'Сеты',
-                     'pizza': 'Пицца',
-                     'desserts': 'Десерты',
-                     'drinks': 'Напитки',
-                     'alcoholic-drinks': 'Алкогольные напитки'
-                 },
-                    footerText: "Все блюда приготовлены из свежих ингредиентов",
-                    quickLinks: {
-                        home: "Главная",
-                        about: "О Нас",
-                        reviews: "Отзывы",
-                        menu: "Меню",
-                        contact: "Контакт"
+
+                window.addEventListener('scroll', function() {
+                    const navbar = document.getElementById('navbar');
+                    navbar.classList.toggle('scrolled', window.scrollY > 50);
+                });
+                const navbarToggle = document.getElementById('navbarToggle');
+                const navbarMenu = document.getElementById('navbarMenu');
+                if (navbarToggle && navbarMenu) {
+                    navbarToggle.addEventListener('click', () => navbarMenu.classList.toggle('active'));
+                    document.querySelectorAll('.navbar-menu a').forEach(link => {
+                        link.addEventListener('click', () => navbarMenu.classList.remove('active'));
+                    });
+                }
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                });
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    buildMenu();
+                    const translations = {
+                        eng: { subtitle: "Fresh & Green Dining Experience", drinkCategories: { 'coffee': 'Coffee', 'tea': 'Tea', 'non-alcoholic-drinks': 'Non-Alcoholic Drinks', 'smoothies': 'Smoothies', 'lemonades': 'Lemonades' }, categories: { 'breakfasts': 'Breakfasts', 'salads': 'Salads', 'soups': 'Soups', 'meat-dishes': 'Meat Dishes', 'fish': 'Fish', 'pastas': 'Pastas', 'burgers': 'Burgers', 'bruschettas': 'Bruschettas', 'appetizers': 'Appetizers', 'for-groups': 'For Groups', 'pizza': 'Pizza', 'desserts': 'Desserts', 'drinks': 'Drinks', 'alcoholic-drinks': 'Alcoholic Drinks' }, footerText: "All dishes prepared with fresh ingredients", quickLinks: { home: "Home", about: "About", reviews: "Reviews", menu: "Menu", contact: "Contact" }, all: "All" },
+                        rus: { subtitle: "Свежая и Зеленая Гастрономия", drinkCategories: { 'coffee': 'Кофе', 'tea': 'Чай', 'non-alcoholic-drinks': 'Безалкогольные Напитки', 'smoothies': 'Смузи', 'lemonades': 'Лимонады' }, categories: { 'breakfasts': 'Завтраки', 'salads': 'Салаты', 'soups': 'Супы', 'meat-dishes': 'Мясные блюда', 'fish': 'Рыба', 'pastas': 'Паста', 'burgers': 'Бургеры', 'bruschettas': 'Брускетты', 'appetizers': 'Закуски', 'for-groups': 'Сеты', 'pizza': 'Пицца', 'desserts': 'Десерты', 'drinks': 'Напитки', 'alcoholic-drinks': 'Алкогольные напитки' }, footerText: "Все блюда приготовлены из свежих ингредиентов", quickLinks: { home: "Главная", about: "О Нас", reviews: "Отзывы", menu: "Меню", contact: "Контакт" }, all: "Все" },
+                        kaz: { subtitle: "Сәнді де Жасанған Тамақ Табысы", drinkCategories: { 'coffee': 'Кофе', 'tea': 'Шай', 'non-alcoholic-drinks': 'Алкоголсіз Сусындар', 'smoothies': 'Смузи', 'lemonades': 'Лимонадтар' }, categories: { 'breakfasts': 'Таңғы ас', 'salads': 'Салаттар', 'soups': 'Сұйық тағамдар', 'meat-dishes': 'Ет тағамдары', 'fish': 'Балық', 'pastas': 'Макарон', 'burgers': 'Бургерлер', 'bruschettas': 'Брускетталар', 'appetizers': 'Тәбеттандырғыштар', 'for-groups': 'Сеттер', 'pizza': 'Пицца', 'desserts': 'Десерттер', 'drinks': 'Сусындар', 'alcoholic-drinks': 'Алкогольдік сусындар' }, footerText: "Барлық тағамдар жаңа ингредиенттерден дайындалған", quickLinks: { home: "Басты Бет", about: "Біз Туралы", reviews: "Пікірлер", menu: "Мәзір", contact: "Байланыс" }, all: "Барлығы" }
+                    };
+                    const languageDropdown = document.getElementById('languageDropdown');
+                    const languageMenu = document.getElementById('languageMenu');
+                    const currentFlag = document.getElementById('currentFlag');
+                    const currentCode = document.getElementById('currentCode');
+                    const languageOptions = document.querySelectorAll('.language-option');
+                    let currentLang = localStorage.getItem('tavola-verde-lang') || 'eng';
+                    function updateLanguageDisplay(lang) {
+                        const flagMap = { 'eng': '🇬🇧', 'rus': '🇷🇺', 'kaz': '🇰🇿' };
+                        const codeMap = { 'eng': 'ENG', 'rus': 'RUS', 'kaz': 'KAZ' };
+                        currentFlag.textContent = flagMap[lang];
+                        currentCode.textContent = codeMap[lang];
+                        languageOptions.forEach(opt => opt.classList.toggle('active', opt.getAttribute('data-lang') === lang));
                     }
-                },
-                kaz: {
-                    subtitle: "Сәнді де Жасанган Тамақ Табысы",
-                    drinkCategories: {
-                         'tea_coffee': 'Чай және Кофе',
-                         'non-alcoholic drinks': 'Алкоголсіз Сусындар',
-                         'smoothies': 'Смузи',
-                         'lemonades': 'Лимонәделер'
-                     },
-                 categories: {
-                     'breakfasts': 'Жейтұлым',
-                     'salads': 'Салаттар',
-                     'soups': 'Сұйық тағамдар',
-                     'meat-dishes': 'Ет тағамдары',
-                     'fish': 'Балық',
-                     'pastas': 'Макарон',
-                     'burgers': 'Бургерлер',
-                     'bruschettas': 'Брускетталар',
-                     'appetizers': 'Тәбеттандырғыштар',
-                     'for-groups': 'Сеттер',
-                     'pizza': 'Пицца',
-                     'desserts': 'Десерттер',
-                     'drinks': 'Сусындар',
-                     'alcoholic-drinks': 'Алкогольдік сусындар'
-                 },
-                    footerText: "Барлық тағамдар жаңа ингредиенттерден дайындалған",
-                    quickLinks: {
-                        home: "Басты Бет",
-                        about: "Біз Туралы",
-                        reviews: "Пікірлер",
-                        menu: "Мәзір",
-                        contact: "Байланыс"
-                    },
-                    all: "Барлығы"
-                }
-        };
-
-            // Language switcher functionality
-            const languageDropdown = document.getElementById('languageDropdown');
-            const languageMenu = document.getElementById('languageMenu');
-            const currentFlag = document.getElementById('currentFlag');
-            const currentCode = document.getElementById('currentCode');
-            const languageOptions = document.querySelectorAll('.language-option');
-
-            // Load saved language or default to 'eng'
-            let currentLang = localStorage.getItem('tavola-verde-lang') || 'eng';
-
-            function updateLanguageDisplay(lang) {
-                const flagMap = {
-                    'eng': '🇬🇧',
-                    'rus': '🇷🇺',
-                    'kaz': '🇰🇿'
-                };
-                const codeMap = {
-                    'eng': 'ENG',
-                    'rus': 'RUS',
-                    'kaz': 'KAZ'
-                };
-
-                currentFlag.textContent = flagMap[lang];
-                currentCode.textContent = codeMap[lang];
-
-                languageOptions.forEach(opt => {
-                    opt.classList.toggle('active', opt.getAttribute('data-lang') === lang);
-                });
-            }
-
-            function applyTranslations(lang) {
-                const trans = translations[lang];
-                if (!trans) return;
-
-                // Update subtitle
-                document.querySelector('.subtitle').textContent = trans.subtitle;
-
-                // Update category titles using data-category-key
-                document.querySelectorAll('[data-category-key]').forEach(el => {
-                    const key = el.getAttribute('data-category-key');
-                    if (trans.categories[key]) {
-                        el.textContent = trans.categories[key];
+                    function applyTranslations(lang) {
+                        const trans = translations[lang];
+                        if (!trans) return;
+                        document.querySelector('.subtitle').textContent = trans.subtitle;
+                        document.querySelectorAll('[data-category-key]').forEach(el => { const key = el.getAttribute('data-category-key'); if (trans.categories[key]) el.textContent = trans.categories[key]; });
+                        document.querySelectorAll('.category-nav-item').forEach(btn => { const key = btn.getAttribute('data-category'); if (key === 'all') btn.textContent = trans.all; else if (trans.categories[key]) btn.textContent = trans.categories[key]; });
+                        document.querySelectorAll('[data-drink-key]').forEach(el => { const key = el.getAttribute('data-drink-key'); if (trans.drinkCategories[key]) el.textContent = trans.drinkCategories[key]; });
+                        document.querySelector('footer p').textContent = trans.footerText;
+                        const navLinks = document.querySelectorAll('.navbar-menu a');
+                        if (navLinks.length >= 4) { navLinks[0].textContent = trans.quickLinks.home; navLinks[1].textContent = trans.quickLinks.about; navLinks[2].textContent = trans.quickLinks.reviews; navLinks[3].textContent = trans.quickLinks.menu; }
                     }
-                });
-
-                // Update category filter nav buttons
-                document.querySelectorAll('.category-nav-item').forEach(btn => {
-                    const key = btn.getAttribute('data-category');
-                    if (key === 'all') {
-                        btn.textContent = trans.all;
-                    } else if (trans.categories[key]) {
-                        btn.textContent = trans.categories[key];
+                    languageDropdown.addEventListener('click', (e) => { e.stopPropagation(); languageMenu.classList.toggle('active'); languageDropdown.classList.toggle('active'); });
+                    document.addEventListener('click', () => { languageMenu.classList.remove('active'); languageDropdown.classList.remove('active'); });
+                    languageMenu.addEventListener('click', (e) => e.stopPropagation());
+                    languageOptions.forEach(option => {
+                        option.addEventListener('click', () => {
+                            const lang = option.getAttribute('data-lang');
+                            currentLang = lang;
+                            localStorage.setItem('tavola-verde-lang', lang);
+                            updateLanguageDisplay(lang);
+                            applyTranslations(lang);
+                        });
+                    });
+                    updateLanguageDisplay(currentLang);
+                    applyTranslations(currentLang);
+                    const categoryNav = document.getElementById('categoryNav');
+                    let isDown = false, startX, scrollLeft;
+                    if (categoryNav) {
+                        categoryNav.addEventListener('touchstart', (e) => { isDown = true; startX = e.touches[0].pageX - categoryNav.offsetLeft; scrollLeft = categoryNav.scrollLeft; }, { passive: true });
+                        categoryNav.addEventListener('touchmove', (e) => { if (!isDown) return; const x = e.touches[0].pageX - categoryNav.offsetLeft; categoryNav.scrollLeft = scrollLeft - (x - startX) * 1.5; }, { passive: true });
+                        categoryNav.addEventListener('touchend', () => { isDown = false; });
                     }
+                    const modal = document.getElementById('descriptionModal');
+                    function closeModal() { modal.classList.remove('active'); document.body.style.overflow = ''; }
+                    document.getElementById('modalClose').addEventListener('click', closeModal);
+                    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+                    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
                 });
-
-                // Update drink subcategory titles using data-drink-key
-                document.querySelectorAll('[data-drink-key]').forEach(el => {
-                    const key = el.getAttribute('data-drink-key');
-                    if (trans.drinkCategories[key]) {
-                        el.textContent = trans.drinkCategories[key];
-                    }
-                });
-
-                // Update footer
-                document.querySelector('footer p').textContent = trans.footerText;
-
-                // Translate navbar menu
-                const navLinks = document.querySelectorAll('.navbar-menu a');
-                if (navLinks.length >= 4) {
-                    navLinks[0].textContent = trans.quickLinks.home;
-                    navLinks[1].textContent = trans.quickLinks.about;
-                    navLinks[2].textContent = trans.quickLinks.reviews;
-                    navLinks[3].textContent = trans.quickLinks.menu;
-                }
-            }
-
-            // Toggle language menu
-            languageDropdown.addEventListener('click', (e) => {
-                e.stopPropagation();
-                languageMenu.classList.toggle('active');
-                languageDropdown.classList.toggle('active');
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', () => {
-                languageMenu.classList.remove('active');
-                languageDropdown.classList.remove('active');
-            });
-
-            languageMenu.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-
-            // Language option click handler
-            languageOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const lang = option.getAttribute('data-lang');
-                    currentLang = lang;
-                    localStorage.setItem('tavola-verde-lang', lang);
-                    updateLanguageDisplay(lang);
-                    applyTranslations(lang);
-                });
-            });
-
-            // Initialize language on load
-            updateLanguageDisplay(currentLang);
-            applyTranslations(currentLang);
-
-            // Touch swipe support for category nav
-            const categoryNav = document.getElementById('categoryNav');
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-
-            if (categoryNav) {
-                categoryNav.addEventListener('touchstart', (e) => {
-                    isDown = true;
-                    startX = e.touches[0].pageX - categoryNav.offsetLeft;
-                    scrollLeft = categoryNav.scrollLeft;
-                }, { passive: true });
-
-                categoryNav.addEventListener('touchmove', (e) => {
-                    if (!isDown) return;
-                    const x = e.touches[0].pageX - categoryNav.offsetLeft;
-                    const walk = (x - startX) * 1.5;
-                    categoryNav.scrollLeft = scrollLeft - walk;
-                }, { passive: true });
-
-                categoryNav.addEventListener('touchend', () => {
-                    isDown = false;
-                });
-            }
-
-            // ========== MODAL FUNCTIONALITY ==========
-            const modal = document.getElementById('descriptionModal');
-
-            function closeModal() {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-
-            // Close on button click
-            document.getElementById('modalClose').addEventListener('click', closeModal);
-
-            // Close on overlay click
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
-
-            // Close on escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
-                    closeModal();
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+            </script>
+        </body>
+        </html>
